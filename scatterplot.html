@@ -3,6 +3,7 @@
 <head>
     <meta charset="utf-8">
     <script src="https://d3js.org/d3.v5.js"></script>
+    <script src="derivadas.js"></script>
 </head>
 <style>
 
@@ -16,7 +17,7 @@ text {
 </style>
 <body>
 <script>
-
+    
 var margin = {top: 30, bottom: 30, left: 50, right:30},
     width = 600 - margin.left - margin.right,
     height = 600 - margin.top - margin.bottom,
@@ -89,6 +90,17 @@ var margin = {top: 30, bottom: 30, left: 50, right:30},
 
 d3.csv("data.csv")
     .then(function(data){
+
+        let deri1 = [];
+        let deri2 = [];
+        data.forEach(function(d) {
+            let neighbours = vecinos(d, data, 50, "age", "blood_pressure");
+            let primera = primera_derivada(d, neighbours,  "age", "blood_pressure");
+            deri1.push(primera);
+            deri2.push(segunda_derivada(d, data, 50, "age", "blood_pressure"));
+        })
+        console.log(deri1);
+        console.log(deri2);
 
         data.forEach(function(d) {
             d['age'] = +d['age']
@@ -255,7 +267,6 @@ d3.csv("data.csv")
 
         };
     });
-
 
 </script>
 
