@@ -47,7 +47,9 @@ var margin = {top: 30, bottom: 30, left: 50, right:30},
                 .attr("class", "tooltip")
                 .style("left", "50px")
                 .style("top", "50px")
-                .style("opacity", 0);
+                .style("opacity", 0),
+    radio_circulos = 3,
+    largo_lineas = 10;
 
 // seleccion de variables
 
@@ -184,14 +186,47 @@ d3.csv("data.csv")
         var lines = svg.selectAll(".line")
                           .data(data)
 
+        var new_lines = lines
+                            .enter().append("line")
+                                    .attr("stroke", function(d){
+                                              return colors(d['sex']);
+                                            })
+                                    .attr("stroke-width", 1)
+                                    .merge(lines)
+                                    .transition()
+                                        .duration(1000)
+                                          .attr("x1", function(d) {
+                                            return xScale(d['age']) + margin.left - largo_lineas;
+                                          })
+                                          .attr("x2", function(d) {
+                                            return xScale(d['age']) + margin.left + largo_lineas;
+                                          })
+                                          .attr("y1", function(d) {
+                                            let neighbours = vecinos(d, data, 50, "age", "cholestoral");
+                                            let primera = primera_derivada(d, neighbours,  "age", "cholestoral");
+                                            return yScale(d['cholestoral']) - largo_lineas*primera;
+                                          })
+                                          .attr("y2", function(d) {
+                                            let neighbours = vecinos(d, data, 50, "age", "cholestoral");
+                                            let primera = primera_derivada(d, neighbours,  "age", "cholestoral");
+                                            return yScale(d['cholestoral']) + largo_lineas*primera;
+                                          });
+        var exit_lines = lines
+                          .exit()
+                              .transition()
+                                  .duration(500)
+                                  .style('opacity', 0)
+                                  .remove();
+
         var circles = svg.selectAll(".circle")
                             .data(data);
 
         var new_circles = circles
                             .enter().append("circle")
-                                    .attr("r", 4)
+                                    .attr("r", radio_circulos)
                                     .attr('stroke','black')
                                     .attr('stroke-width',0)
+                                    .attr('opacity', 0.8)
                                     .on("mouseover", function(d) {
                                                 d3.select(d3.event.target)
                                                     .transition()
@@ -210,7 +245,7 @@ d3.csv("data.csv")
                                                 d3.select(d3.event.target)
                                                   .transition()
                                                   .duration(500)
-                                                  .attr('r',4)
+                                                  .attr('r',radio_circulos)
                                                   .attr('stroke-width',0);
                                                 tooltip.transition()
                                                    .duration(300)
@@ -229,35 +264,14 @@ d3.csv("data.csv")
                                                 return colors(d['sex']);
                                             })
 
-        bars
-            .exit()
-                .transition()
-                    .duration(500)
-                    .style('opacity', 0)
-                    .remove();
+      var exit_bars = bars
+                          .exit()
+                              .transition()
+                                  .duration(500)
+                                  .style('opacity', 0)
+                                  .remove();
         console.log("hola")
-        var new_lines = lines
-                            .enter().append("line")
-                                    .attr("x1", function(d) {
-                                      return xScale(d['age']) + margin.lef - 5;
-                                    })
-                                    .attr("x2", function(d) {
-                                      return xScale(d['age']) + margin.lef + 5
-                                    })
-                                    .attr("y1", function(d) {
-                                      let neighbours = vecinos(d, data, 50, "age", "blood_pressure");
-                                      let primera = primera_derivada(d, neighbours,  "age", "blood_pressure");
-                                      console.log(primera)
-                                      return yScale(d['cholestoral']) - 5*primera;
-                                    })
-                                    .attr("y2", function(d) {
-                                      let neighbours = vecinos(d, data, 50, "age", "blood_pressure");
-                                      let primera = primera_derivada(d, neighbours,  "age", "blood_pressure");
-                                      return yScale(d['cholestoral']) + 5*primera;
-                                    })
-                                    .attr("stroke", function(d){
-                                      return colors(d['sex']);
-                                    });
+
 
         function xChange() {
             var value = diccio[this.value]
@@ -296,6 +310,30 @@ d3.csv("data.csv")
               .transition()
                 .duration(1000)
                 .attr('fill',function (d) { return colors(d[value]) })
+
+        };
+
+        function dChange() {
+
+          d3.selectAll('line')
+            .transition()
+                .duration(1000)
+                  .attr("x1", function(d) {
+                    return xScale(d['age']) + margin.left - largo_lineas;
+                  })
+                  .attr("x2", function(d) {
+                    return xScale(d['age']) + margin.left + largo_lineas;
+                  })
+                  .attr("y1", function(d) {
+                    let neighbours = vecinos(d, data, 50, "age", "cholestoral");
+                    let primera = primera_derivada(d, neighbours,  "age", "cholestoral");
+                    return yScale(d['cholestoral']) - largo_lineas*primera;
+                  })
+                  .attr("y2", function(d) {
+                    let neighbours = vecinos(d, data, 50, "age", "cholestoral");
+                    let primera = primera_derivada(d, neighbours,  "age", "cholestoral");
+                    return yScale(d['cholestoral']) + largo_lineas*primera;
+                  });
 
         };
     });
