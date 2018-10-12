@@ -17,7 +17,7 @@ text {
 </style>
 <body>
 <script>
-    
+
 var margin = {top: 30, bottom: 30, left: 50, right:30},
     width = 600 - margin.left - margin.right,
     height = 600 - margin.top - margin.bottom,
@@ -181,6 +181,9 @@ d3.csv("data.csv")
         var x = "age",
             y = "cholestoral";
 
+        var lines = svg.selectAll(".line")
+                          .data(data)
+
         var circles = svg.selectAll(".circle")
                             .data(data);
 
@@ -232,6 +235,29 @@ d3.csv("data.csv")
                     .duration(500)
                     .style('opacity', 0)
                     .remove();
+        console.log("hola")
+        var new_lines = lines
+                            .enter().append("line")
+                                    .attr("x1", function(d) {
+                                      return xScale(d['age']) + margin.lef - 5;
+                                    })
+                                    .attr("x2", function(d) {
+                                      return xScale(d['age']) + margin.lef + 5
+                                    })
+                                    .attr("y1", function(d) {
+                                      let neighbours = vecinos(d, data, 50, "age", "blood_pressure");
+                                      let primera = primera_derivada(d, neighbours,  "age", "blood_pressure");
+                                      console.log(primera)
+                                      return yScale(d['cholestoral']) - 5*primera;
+                                    })
+                                    .attr("y2", function(d) {
+                                      let neighbours = vecinos(d, data, 50, "age", "blood_pressure");
+                                      let primera = primera_derivada(d, neighbours,  "age", "blood_pressure");
+                                      return yScale(d['cholestoral']) + 5*primera;
+                                    })
+                                    .attr("stroke", function(d){
+                                      return colors(d['sex']);
+                                    });
 
         function xChange() {
             var value = diccio[this.value]
