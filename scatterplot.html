@@ -91,6 +91,11 @@ var margin = {top: 30, bottom: 30, left: 50, right:30},
 d3.csv("data.csv")
     .then(function(data){
 
+        // let neighbours = vecinos(data[130], data, 50, "age", "blood_pressure");
+        // let primera = primera_derivada(data[130], neighbours,  "age", "blood_pressure");
+        // console.log(neighbours);
+        // console.log(primera);
+
         let deri1 = [];
         let deri2 = [];
         data.forEach(function(d) {
@@ -101,6 +106,7 @@ d3.csv("data.csv")
         })
         console.log(deri1);
         console.log(deri2);
+        console.log(smoothness(data, 50, "age", "blood_pressure"));
 
         data.forEach(function(d) {
             d['age'] = +d['age']
