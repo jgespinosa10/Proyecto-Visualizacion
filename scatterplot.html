@@ -3,6 +3,7 @@
 <head>
     <meta charset="utf-8">
     <script src="https://d3js.org/d3.v5.js"></script>
+    <script src="https://d3js.org/d3-selection-multi.v1.min.js"></script>
     <script src="derivadas.js"></script>
 </head>
 <style>
@@ -155,6 +156,19 @@ d3.csv("data.csv")
               .text(function (d) { return d.text ;})
           body.append('br')
 
+        var span = body.append('span')
+              .text('Select dx variable: ')
+          var yInput = body.append('select')
+              .attr('id','dSelect')
+              .on('change',dChange)
+            .selectAll('option')
+              .data(selectData)
+              .enter()
+            .append('option')
+              .attr('value', function (d) { return d.text })
+              .text(function (d) { return d.text ;})
+          body.append('br')
+
         // Select categorical variable
         var span = body.append('span')
               .text('Select Categorical variable: ')
@@ -286,6 +300,15 @@ d3.csv("data.csv")
                 .attr("cx", function(d) {
                     return xScale(d[value]) + margin.left;
                 })
+            d3.selectAll('line')
+              .transition()
+                  .duration(1000)
+                    .attr("x1", function(d) {
+                      return xScale(d[x]) + margin.left - largo_lineas;
+                    })
+                    .attr("x2", function(d) {
+                      return xScale(d[x]) + margin.left + largo_lineas;
+                    })
         };
 
         function yChange() {
@@ -301,11 +324,23 @@ d3.csv("data.csv")
                 .attr("cy", function(d) {
                     return yScale(d[value]);
                 });
+            d3.selectAll('line')
+              .transition()
+                  .duration(1000)
+                  .attrs(function(d) {
+                          let neighbours = vecinos(d, data, 50, value, y);
+                          let primera = primera_derivada(d, neighbours,  value, y);
+                          return {"y1": yScale(d[y]) - largo_lineas*primera, "y2": yScale(d[y]) + largo_lineas*primera};
+                        })
 
         };
 
         function cChange() {
             var value = diccio[this.value]
+            d3.selectAll('line')
+              .transition()
+                .duration(1000)
+                .attr('stroke',function (d) { return colors(d[value]) })
              d3.selectAll('circle')
               .transition()
                 .duration(1000)
@@ -314,27 +349,24 @@ d3.csv("data.csv")
         };
 
         function dChange() {
-
+          var value = diccio[this.value]
+          console.log(x)
+          console.log(y)
           d3.selectAll('line')
             .transition()
                 .duration(1000)
                   .attr("x1", function(d) {
-                    return xScale(d['age']) + margin.left - largo_lineas;
+                    return xScale(d[x]) + margin.left - largo_lineas;
                   })
                   .attr("x2", function(d) {
-                    return xScale(d['age']) + margin.left + largo_lineas;
+                    return xScale(d[x]) + margin.left + largo_lineas;
                   })
-                  .attr("y1", function(d) {
-                    let neighbours = vecinos(d, data, 50, "age", "cholestoral");
-                    let primera = primera_derivada(d, neighbours,  "age", "cholestoral");
-                    return yScale(d['cholestoral']) - largo_lineas*primera;
-                  })
-                  .attr("y2", function(d) {
-                    let neighbours = vecinos(d, data, 50, "age", "cholestoral");
-                    let primera = primera_derivada(d, neighbours,  "age", "cholestoral");
-                    return yScale(d['cholestoral']) + largo_lineas*primera;
-                  });
+                  .attrs(function(d) {
+                    let neighbours = vecinos(d, data, 50, value, y);
+                    let primera = primera_derivada(d, neighbours,  value, y);
 
+                    return {"y1": yScale(d[y]) - largo_lineas*primera, "y2": yScale(d[y]) + largo_lineas*primera};
+                  })
         };
     });
 
