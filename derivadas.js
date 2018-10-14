@@ -3,7 +3,7 @@ function vecinos(punto, dataset, distancia, x, y)
     let neighbours = [];
     for(let i = 0; i < dataset.length; i++)
     {
-        let r = ((dataset[i][y] - punto[y])**2+(dataset[i][x] - punto[x])**2)**(1);
+        let r = ((dataset[i][y] - punto[y])**2+(dataset[i][x] - punto[x])**2)**(1/2);
         if(r != 0 && r<=distancia) neighbours.push(dataset[i]);
     }
     return neighbours;
