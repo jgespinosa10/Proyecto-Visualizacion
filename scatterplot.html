@@ -22,9 +22,10 @@ text {
 var margin = {top: 30, bottom: 30, left: 50, right:30},
     width = 600 - margin.left - margin.right,
     height = 600 - margin.top - margin.bottom,
+    transitionDuration = 1000,
     svg = d3.select("body").append("svg")
                     .attr("height", height + margin.top + margin.bottom)
-                    .attr("width", width + margin.left + margin.right)
+                    .attr("width", width + margin.left + margin.right + 150)
                     .append("g")
                         .attr("transform", "translate(" + margin.left + "," + margin.top + ")"),
     xScale = d3.scaleLinear()
@@ -42,6 +43,23 @@ var margin = {top: 30, bottom: 30, left: 50, right:30},
     yAxis = svg.append("g")
                 .attr("class", "y-axis")
                 .call(yGen),
+	Ylabel = svg.append("text")
+			  .attr("class", "label-y")
+			  .attr("transform", "rotate(-90)")
+			  .attr("y", 0 - margin.left)
+			  .attr("x",0 - (height / 2))
+			  .attr("dy", "1em")
+			  .attr("style", "font-size: 20")
+			  .style("text-anchor", "middle")
+			  .text("Cholestoral (mg/dl)"),   
+	Xlabel = svg.append("text")
+				  .attr("class", "label-x")             
+				  .attr("transform",
+				        "translate(" + (width/2) + " ," + 
+				                       (height + margin.top*4/5) + ")")
+				  .attr("style", "font-size: 20")
+				  .style("text-anchor", "middle")
+				  .text("Age (Years)"),
     colors = d3.scaleOrdinal(d3.schemeCategory10),
     tooltip = d3.select("body").append("div")
                 .style("position", "absolute")
@@ -49,6 +67,106 @@ var margin = {top: 30, bottom: 30, left: 50, right:30},
                 .style("left", "50px")
                 .style("top", "50px")
                 .style("opacity", 0),
+	legendw = width + 50
+    legendh = height*2/3
+    LLabel = svg.append("text")
+				  .attr("class", "label-x")             
+				  .attr("transform",
+				        "translate(" + (width + 50) + " ," + 
+				                       (height*2/3) + ")")
+				  .attr("style", "font-size: 20")
+				  .style("text-anchor", "left")
+				  .text("Legend");
+	Lcircle1 = svg.append("circle")
+							.attr("class","clegend0")
+							.attr("r", 4)
+							.attr("transform",
+					        "translate(" + (legendw-5) + " ," + 
+					                       (legendh + 15) + ")")
+                            .attr('stroke','black')
+                            .attr('stroke-width',0)
+                            .attr("fill", colors(0))
+    Lcircle2 = svg.append("circle")
+    						.attr("class","clegend1")
+							.attr("r", 4)
+							.attr("transform",
+					        "translate(" + (legendw-5) + " ," + 
+					                       (legendh + 30) + ")")
+                            .attr('stroke','black')
+                            .attr('stroke-width',0)
+                            .attr("fill", colors(1))
+    Lcircle3 = svg.append("circle")
+    						.attr("class","clegend2")
+							.attr("r", 4)
+							.attr("opacity", 0)
+							.attr("transform",
+					        "translate(" + (legendw-5) + " ," + 
+					                       (legendh + 45) + ")")
+                            .attr('stroke','black')
+                            .attr('stroke-width',0)
+                            .attr("fill", colors(1))
+    Lcircle4 = svg.append("circle")
+    						.attr("class","clegend3")
+							.attr("r", 4)
+							.attr("transform",
+					        "translate(" + (legendw-5) + " ," + 
+					                       (legendh + 60) + ")")
+							.attr("opacity", 0)
+                            .attr('stroke','black')
+                            .attr('stroke-width',0)
+                            .attr("fill", colors(1))
+    Lcircle5 = svg.append("circle")
+    						.attr("class","clegend4")
+							.attr("r", 4)
+							.attr("opacity", 0)
+							.attr("transform",
+					        "translate(" + (legendw-5) + " ," + 
+					                       (legendh + 75) + ")")
+                            .attr('stroke','black')
+                            .attr('stroke-width',0)
+                            .attr("fill", colors(1))
+
+    Ltext1 = svg.append("text")
+				  .attr("class", "legend0")             
+				  .attr("transform",
+				        "translate(" + (legendw) + " ," + 
+				                       (legendh +20) + ")")
+				  .attr("style", "font-size: 20")
+				  .style("text-anchor", "left")
+				  .text("Male");
+	Ltext2 = svg.append("text")
+				  .attr("class", "legend1")             
+				  .attr("transform",
+				        "translate(" + (legendw) + " ," + 
+				                       (legendh + 35) + ")")
+				  .attr("style", "font-size: 20")
+				  .style("text-anchor", "left")
+				  .text("Female");
+	Ltext3 = svg.append("text")
+			  .attr("class", "legend2")             
+			  .attr("transform",
+			        "translate(" + (legendw) + " ," + 
+			                       (legendh + 50) + ")")
+			  .attr("style", "font-size: 20")
+			  .style("text-anchor", "left")
+			  .text("");
+	Ltext4 = svg.append("text")
+			  .attr("class", "legend3")             
+			  .attr("transform",
+			        "translate(" + (legendw) + " ," + 
+			                       (legendh + 65) + ")")
+			  .attr("style", "font-size: 20")
+			  .style("text-anchor", "left")
+			  .text("");
+	Ltext5 = svg.append("text")
+			  .attr("class", "legend4")             
+			  .attr("transform",
+			        "translate(" + (legendw) + " ," + 
+			                       (legendh + 80) + ")")
+			  .attr("style", "font-size: 20")
+			  .style("text-anchor", "left")
+			  .text("");
+
     radio_circulos = 3,
     largo_lineas = 10;
 
@@ -87,8 +205,20 @@ var margin = {top: 30, bottom: 30, left: 50, right:30},
                 "Number of major vessels (0-3) colored by flourosopy ": "number_vessels" ,
                 "Thal (3 = normal; 6 = fixed defect; 7 = reversable defect)": "thal" ,
                 "diagnosis of heart disease": "diagnosis" };
-
-
+    var labels = { "age": "Age (Years)",
+					"blood_pressure" : "Pressure (mm Hg)",
+					"cholestoral" : "Cholestoral (mg/dl)",
+					"heart_rate": "Heart Rate (bpm)",
+					"st_depression": "ST depression (mm)"};
+	var lagendic = {"chest_pain": {1: "Typical Angina", 2: "Atypical Angina", 3: "Non-Anginal Pain", 4: "Asymptomatic"},
+					"sex": {0: "Male", 1: "Female"},
+					"blood_sugar": {0: "False", 1: "True"},
+					"electrocard": {0: "Normal", 1: "Abnormal", 2: "Problem", 3: "Electrocard"},
+					"exercise": {0: "No", 1: "Yes"},
+					"slope_exercise": {1: "upsloping", 2: "Flat", 3: "Downsloping"},
+					"number_vessels": {0: "0", 1: "1", 2: "2", 3: "3"},
+					"thal" : {3: "Normal", 6: "Fixed defect", 7: "Reversable Defect"},
+					"diagnosis": {0: "0", 1: "1", 2: "2", 3: "3", 4: "4"}};
 
 
 d3.csv("data.csv")
@@ -225,11 +355,12 @@ d3.csv("data.csv")
                                   .style('opacity', 0)
                                   .remove();
 
-        var circles = svg.selectAll(".circle")
+        var circles = svg.selectAll(".datacircle")
                             .data(data);
 
         var new_circles = circles
                             .enter().append("circle")
+                            		.attr("class", "datacircle")
                                     .attr("r", radio_circulos)
                                     .attr('stroke','black')
                                     .attr('stroke-width',0)
@@ -282,13 +413,10 @@ d3.csv("data.csv")
         function xChange() {
             var value = diccio[this.value]
             x = value
-            xScale.domain([d3.min(data, function(d) {
-                return d[value] * 1.1;}), d3.max(data, function(d) {
-                    return d[value] * 1.1;})]);
                 svg.select(".x-axis").transition()
                     .duration(1000)
                     .call(xGen);
-            d3.selectAll("circle").transition()
+            d3.selectAll(".datacircle").transition()
                 .duration(1000)
                 .attr("cx", function(d) {
                     return xScale(d[value]) + margin.left;
@@ -322,12 +450,13 @@ d3.csv("data.csv")
         function yChange() {
             var value = diccio[this.value]
             y = value
+            redrawTextY(labels[y])
             yScale
                 .domain([0, d3.max(data, function(d) {return d[value] * 1.1;})]);
             svg.select(".y-axis").transition()
                 .duration(1000)
                 .call(yGen);
-            d3.selectAll("circle").transition()
+            d3.selectAll(".datacircle").transition()
                 .duration(1000)
                 .attr("cy", function(d) {
                     return yScale(d[value]);
@@ -348,15 +477,20 @@ d3.csv("data.csv")
 
         function cChange() {
             var value = diccio[this.value]
-            d3.selectAll('line')
-              .transition()
-                .duration(1000)
-                .attr('stroke',function (d) { return colors(d[value]) })
-             d3.selectAll('circle')
+            redrawLegend(value)
+             d3.selectAll('.datacircle')
               .transition()
                 .duration(1000)
                 .attr('fill',function (d) { return colors(d[value]) })
-
+                
+             d3.selectAll('line')
+              .transition()
+                .duration(1000)
+                .attr('stroke',function (d) { return colors(d[value]) })
+             d3.selectAll('datacircle')
+              .transition()
+                .duration(1000)
+                .attr('fill',function (d) { return colors(d[value]) })
         };
         function dChange() {
           var value = diccio[this.value]
@@ -384,8 +518,10 @@ d3.csv("data.csv")
                     return {"y1": (yScale(d[y]) + ejey), "y2": (yScale(d[y]) - ejey)};
                   })
         };
-    });
 
+</script>
+
+</body>
 </script>
 
 </body>
