@@ -569,7 +569,6 @@ d3.csv("data.csv")
 				.attr("opacity", 0)
 				i++
 			}}
-		});
 
         function dChange() {
           var value = diccio[this.value]
@@ -577,34 +576,32 @@ d3.csv("data.csv")
             .transition()
                 .duration(1000)
                 .attr("x1", function(d) {
-                        let neighbours = vecinos(d, data, 50, x, y);
-                        let primera = primera_derivada(d, neighbours,  x, y);
+                        let neighbours = vecinos(d, data, 50, value, y);
+                        let primera = primera_derivada(d, neighbours,  value, y);
                         const ejex = largo_lineas*Math.cos(Math.atan(primera));
                         return (xScale(d[x]) + margin.left - ejex);
                     })
                     .attr("x2", function(d) {
-                        let neighbours = vecinos(d, data, 50, x, y);
-                        let primera = primera_derivada(d, neighbours,  x, y);
+                        let neighbours = vecinos(d, data, 50, value, y);
+                        let primera = primera_derivada(d, neighbours,  value, y);
                         const ejex = largo_lineas*Math.cos(Math.atan(primera));
                         return (xScale(d[x]) + margin.left + ejex);
                     })
                     .attr("y1", function(d) {
-                        let neighbours = vecinos(d, data, 50, x, y);
-                        let primera = primera_derivada(d, neighbours,  x, y);
+                        let neighbours = vecinos(d, data, 50, value, y);
+                        let primera = primera_derivada(d, neighbours,  value, y);
                         const ejex = largo_lineas*Math.sin(Math.atan(primera));
                         return (yScale(d[y]) - ejex);
                     })                   
                     .attr("y2", function(d) {
-                        let neighbours = vecinos(d, data, 50, x, y);
-                        let primera = primera_derivada(d, neighbours,  x, y);
+                        let neighbours = vecinos(d, data, 50, value, y);
+                        let primera = primera_derivada(d, neighbours,  value, y);
                         const ejex = largo_lineas*Math.sin(Math.atan(primera));
                         return (yScale(d[y]) + ejex);
                     })
         };
+    })
 
-</script>
-
-</body>
 </script>
 
 </body>
