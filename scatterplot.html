@@ -51,11 +51,11 @@ var margin = {top: 30, bottom: 30, left: 50, right:30},
 			  .attr("dy", "1em")
 			  .attr("style", "font-size: 20")
 			  .style("text-anchor", "middle")
-			  .text("Cholestoral (mg/dl)"),   
+			  .text("Cholestoral (mg/dl)"),
 	Xlabel = svg.append("text")
-				  .attr("class", "label-x")             
+				  .attr("class", "label-x")
 				  .attr("transform",
-				        "translate(" + (width/2) + " ," + 
+				        "translate(" + (width/2) + " ," +
 				                       (height + margin.top*4/5) + ")")
 				  .attr("style", "font-size: 20")
 				  .style("text-anchor", "middle")
@@ -70,9 +70,9 @@ var margin = {top: 30, bottom: 30, left: 50, right:30},
 	legendw = width + 50
     legendh = height*2/3
     LLabel = svg.append("text")
-				  .attr("class", "label-x")             
+				  .attr("class", "label-x")
 				  .attr("transform",
-				        "translate(" + (width + 50) + " ," + 
+				        "translate(" + (width + 50) + " ," +
 				                       (height*2/3) + ")")
 				  .attr("style", "font-size: 20")
 				  .style("text-anchor", "left")
@@ -81,7 +81,7 @@ var margin = {top: 30, bottom: 30, left: 50, right:30},
 							.attr("class","clegend0")
 							.attr("r", 4)
 							.attr("transform",
-					        "translate(" + (legendw-5) + " ," + 
+					        "translate(" + (legendw-5) + " ," +
 					                       (legendh + 15) + ")")
                             .attr('stroke','black')
                             .attr('stroke-width',0)
@@ -90,7 +90,7 @@ var margin = {top: 30, bottom: 30, left: 50, right:30},
     						.attr("class","clegend1")
 							.attr("r", 4)
 							.attr("transform",
-					        "translate(" + (legendw-5) + " ," + 
+					        "translate(" + (legendw-5) + " ," +
 					                       (legendh + 30) + ")")
                             .attr('stroke','black')
                             .attr('stroke-width',0)
@@ -100,7 +100,7 @@ var margin = {top: 30, bottom: 30, left: 50, right:30},
 							.attr("r", 4)
 							.attr("opacity", 0)
 							.attr("transform",
-					        "translate(" + (legendw-5) + " ," + 
+					        "translate(" + (legendw-5) + " ," +
 					                       (legendh + 45) + ")")
                             .attr('stroke','black')
                             .attr('stroke-width',0)
@@ -109,7 +109,7 @@ var margin = {top: 30, bottom: 30, left: 50, right:30},
     						.attr("class","clegend3")
 							.attr("r", 4)
 							.attr("transform",
-					        "translate(" + (legendw-5) + " ," + 
+					        "translate(" + (legendw-5) + " ," +
 					                       (legendh + 60) + ")")
 							.attr("opacity", 0)
                             .attr('stroke','black')
@@ -120,48 +120,48 @@ var margin = {top: 30, bottom: 30, left: 50, right:30},
 							.attr("r", 4)
 							.attr("opacity", 0)
 							.attr("transform",
-					        "translate(" + (legendw-5) + " ," + 
+					        "translate(" + (legendw-5) + " ," +
 					                       (legendh + 75) + ")")
                             .attr('stroke','black')
                             .attr('stroke-width',0)
                             .attr("fill", colors(1))
 
     Ltext1 = svg.append("text")
-				  .attr("class", "legend0")             
+				  .attr("class", "legend0")
 				  .attr("transform",
-				        "translate(" + (legendw) + " ," + 
+				        "translate(" + (legendw) + " ," +
 				                       (legendh +20) + ")")
 				  .attr("style", "font-size: 20")
 				  .style("text-anchor", "left")
 				  .text("Male");
 	Ltext2 = svg.append("text")
-				  .attr("class", "legend1")             
+				  .attr("class", "legend1")
 				  .attr("transform",
-				        "translate(" + (legendw) + " ," + 
+				        "translate(" + (legendw) + " ," +
 				                       (legendh + 35) + ")")
 				  .attr("style", "font-size: 20")
 				  .style("text-anchor", "left")
 				  .text("Female");
 	Ltext3 = svg.append("text")
-			  .attr("class", "legend2")             
+			  .attr("class", "legend2")
 			  .attr("transform",
-			        "translate(" + (legendw) + " ," + 
+			        "translate(" + (legendw) + " ," +
 			                       (legendh + 50) + ")")
 			  .attr("style", "font-size: 20")
 			  .style("text-anchor", "left")
 			  .text("");
 	Ltext4 = svg.append("text")
-			  .attr("class", "legend3")             
+			  .attr("class", "legend3")
 			  .attr("transform",
-			        "translate(" + (legendw) + " ," + 
+			        "translate(" + (legendw) + " ," +
 			                       (legendh + 65) + ")")
 			  .attr("style", "font-size: 20")
 			  .style("text-anchor", "left")
 			  .text("");
 	Ltext5 = svg.append("text")
-			  .attr("class", "legend4")             
+			  .attr("class", "legend4")
 			  .attr("transform",
-			        "translate(" + (legendw) + " ," + 
+			        "translate(" + (legendw) + " ," +
 			                       (legendh + 80) + ")")
 			  .attr("style", "font-size: 20")
 			  .style("text-anchor", "left")
@@ -413,7 +413,7 @@ d3.csv("data.csv")
             var value = diccio[this.value]
             x = value
             redrawTextX(labels[x])
-            texto = labels[x] 
+            texto = labels[x]
             d3.selectAll("LabelX").text(texto)
             xScale
                 .domain([d3.min(data, function(d) {return d[value] * 1.1;}), d3.max(data, function(d) {return d[value] * 1.1;})]);
@@ -445,7 +445,7 @@ d3.csv("data.csv")
                         let primera = primera_derivada(d, neighbours,  x, y);
                         const ejex = largo_lineas*Math.sin(Math.atan(primera));
                         return (yScale(d[y]) - ejex);
-                    })                   
+                    })
                     .attr("y2", function(d) {
                         let neighbours = vecinos(d, data, 50, x, y);
                         let primera = primera_derivada(d, neighbours,  x, y);
@@ -488,7 +488,7 @@ d3.csv("data.csv")
                         let primera = primera_derivada(d, neighbours,  x, y);
                         const ejex = largo_lineas*Math.sin(Math.atan(primera));
                         return (yScale(d[y]) - ejex);
-                    })                   
+                    })
                     .attr("y2", function(d) {
                         let neighbours = vecinos(d, data, 50, x, y);
                         let primera = primera_derivada(d, neighbours,  x, y);
@@ -505,7 +505,7 @@ d3.csv("data.csv")
               .transition()
                 .duration(1000)
                 .attr('fill',function (d) { return colors(d[value]) })
-                
+
              d3.selectAll('line')
               .transition()
                 .duration(1000)
@@ -533,7 +533,7 @@ d3.csv("data.csv")
 		    .style("opacity", 1)
 		    .text(texto)
 		}
-		        
+
 
 		function redrawLegend(value) {
 			dict = lagendic[value]
@@ -592,7 +592,7 @@ d3.csv("data.csv")
                         let primera = primera_derivada(d, neighbours,  value, y);
                         const ejex = largo_lineas*Math.sin(Math.atan(primera));
                         return (yScale(d[y]) - ejex);
-                    })                   
+                    })
                     .attr("y2", function(d) {
                         let neighbours = vecinos(d, data, 50, value, y);
                         let primera = primera_derivada(d, neighbours,  value, y);
