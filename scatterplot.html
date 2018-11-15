@@ -311,7 +311,7 @@ d3.csv("data.csv")
             y = "cholestoral";
 
         var lines = svg.selectAll(".line")
-                          .data(data)
+                          .data(data);
 
         var new_lines = lines
                             .enter().append("line")
@@ -323,29 +323,40 @@ d3.csv("data.csv")
                                     .transition()
                                         .duration(1000)
                                           .attr("x1", function(d) {
-                                            let neighbours = vecinos(d, data, 50, "age", "cholestoral");
-                                            let primera = primera_derivada(d, neighbours,  "age", "cholestoral");
+                                            let primera = primera_derivada(d["age"], d["cholestoral"], data, 50,  "age", "cholestoral");
                                             const ejex = largo_lineas*Math.cos(Math.atan(primera));
                                             return (xScale(d['age']) + margin.left - ejex);
                                           })
                                           .attr("x2", function(d) {
-                                            let neighbours = vecinos(d, data, 50, "age", "cholestoral");
-                                            let primera = primera_derivada(d, neighbours,  "age", "cholestoral");
+                                            let primera = primera_derivada(d["age"], d["cholestoral"], data, 50,  "age", "cholestoral");
                                             const ejex = largo_lineas*Math.cos(Math.atan(primera));
                                             return xScale(d['age']) + margin.left + ejex;
                                           })
                                           .attr("y1", function(d) {
-                                            let neighbours = vecinos(d, data, 50, "age", "cholestoral");
-                                            let primera = primera_derivada(d, neighbours,  "age", "cholestoral");
+                                            let primera = primera_derivada(d["age"], d["cholestoral"], data, 50,  "age", "cholestoral");
                                             const ejey = largo_lineas*Math.sin(Math.atan(primera));
                                             return yScale(d['cholestoral']) - ejey;
                                           })
                                           .attr("y2", function(d) {
-                                            let neighbours = vecinos(d, data, 50, "age", "cholestoral");
-                                            let primera = primera_derivada(d, neighbours,  "age", "cholestoral");
+                                            let primera = primera_derivada(d["age"], d["cholestoral"], data, 50,  "age", "cholestoral");
                                             const ejey = largo_lineas*Math.sin(Math.atan(primera));
                                             return yScale(d['cholestoral']) + ejey;
                                           });
+        
+        var hacerlineas = d3.line()
+                            .x(function(d) { return xScale(d.x) + margin.left;})
+                            .y(function(d) { return yScale(d.y);});
+
+        for(let i = 0; i < 27; i++)
+        {
+            svg.append("path")
+                .datum(streamline(60, 400 - i*10, data, 200, "age", "cholestoral", 28, 82, 500, 1))
+                .attr("d", hacerlineas)
+                .attr("stroke", "orange")
+                .attr("stroke-width", 1)
+                .attr("fill", "none");
+        }ñ
+
         var exit_lines = lines
                           .exit()
                               .transition()
@@ -355,6 +366,7 @@ d3.csv("data.csv")
 
         var circles = svg.selectAll(".datacircle")
                             .data(data);
+
 
         var new_circles = circles
                             .enter().append("circle")
@@ -429,26 +441,22 @@ d3.csv("data.csv")
               .transition()
                   .duration(1000)
                     .attr("x1", function(d) {
-                        let neighbours = vecinos(d, data, 50, x, y);
-                        let primera = primera_derivada(d, neighbours,  x, y);
+                        let primera = primera_derivada(d[x], d[y], data, 50,  x, y);
                         const ejex = largo_lineas*Math.cos(Math.atan(primera));
                         return (xScale(d[x]) + margin.left - ejex);
                     })
                     .attr("x2", function(d) {
-                        let neighbours = vecinos(d, data, 50, x, y);
-                        let primera = primera_derivada(d, neighbours,  x, y);
+                        let primera = primera_derivada(d[x], d[y], data, 50,  x, y);
                         const ejex = largo_lineas*Math.cos(Math.atan(primera));
                         return (xScale(d[x]) + margin.left + ejex);
                     })
                     .attr("y1", function(d) {
-                        let neighbours = vecinos(d, data, 50, x, y);
-                        let primera = primera_derivada(d, neighbours,  x, y);
+                        let primera = primera_derivada(d[x], d[y], data, 50,  x, y);
                         const ejex = largo_lineas*Math.sin(Math.atan(primera));
                         return (yScale(d[y]) - ejex);
                     })
                     .attr("y2", function(d) {
-                        let neighbours = vecinos(d, data, 50, x, y);
-                        let primera = primera_derivada(d, neighbours,  x, y);
+                        let primera = primera_derivada(d[x], d[y], data, 50,  x, y);
                         const ejex = largo_lineas*Math.sin(Math.atan(primera));
                         return (yScale(d[y]) + ejex);
                     })
@@ -472,26 +480,22 @@ d3.csv("data.csv")
               .transition()
                   .duration(1000)
                   .attr("x1", function(d) {
-                        let neighbours = vecinos(d, data, 50, x, y);
-                        let primera = primera_derivada(d, neighbours,  x, y);
+                        let primera = primera_derivada(d[x], d[y], data, 50,  x, y);
                         const ejex = largo_lineas*Math.cos(Math.atan(primera));
                         return (xScale(d[x]) + margin.left - ejex);
                     })
                     .attr("x2", function(d) {
-                        let neighbours = vecinos(d, data, 50, x, y);
-                        let primera = primera_derivada(d, neighbours,  x, y);
+                        let primera = primera_derivada(d[x], d[y], data, 50,  x, y);
                         const ejex = largo_lineas*Math.cos(Math.atan(primera));
                         return (xScale(d[x]) + margin.left + ejex);
                     })
                     .attr("y1", function(d) {
-                        let neighbours = vecinos(d, data, 50, x, y);
-                        let primera = primera_derivada(d, neighbours,  x, y);
+                        let primera = primera_derivada(d[x], d[y], data, 50,  x, y);
                         const ejex = largo_lineas*Math.sin(Math.atan(primera));
                         return (yScale(d[y]) - ejex);
                     })
                     .attr("y2", function(d) {
-                        let neighbours = vecinos(d, data, 50, x, y);
-                        let primera = primera_derivada(d, neighbours,  x, y);
+                        let primera = primera_derivada(d[x], d[y], data, 50,  x, y);
                         const ejex = largo_lineas*Math.sin(Math.atan(primera));
                         return (yScale(d[y]) + ejex);
                     })
@@ -576,26 +580,22 @@ d3.csv("data.csv")
             .transition()
                 .duration(1000)
                 .attr("x1", function(d) {
-                        let neighbours = vecinos(d, data, 50, value, y);
-                        let primera = primera_derivada(d, neighbours,  value, y);
+                        let primera = primera_derivada(d[value], d[y], data, 50,  value, y);
                         const ejex = largo_lineas*Math.cos(Math.atan(primera));
                         return (xScale(d[x]) + margin.left - ejex);
                     })
                     .attr("x2", function(d) {
-                        let neighbours = vecinos(d, data, 50, value, y);
-                        let primera = primera_derivada(d, neighbours,  value, y);
+                        let primera = primera_derivada(d[value], d[y], data, 50,  value, y);
                         const ejex = largo_lineas*Math.cos(Math.atan(primera));
                         return (xScale(d[x]) + margin.left + ejex);
                     })
                     .attr("y1", function(d) {
-                        let neighbours = vecinos(d, data, 50, value, y);
-                        let primera = primera_derivada(d, neighbours,  value, y);
+                        let primera = primera_derivada(d[value], d[y], data, 50,  value, y);
                         const ejex = largo_lineas*Math.sin(Math.atan(primera));
                         return (yScale(d[y]) - ejex);
                     })
                     .attr("y2", function(d) {
-                        let neighbours = vecinos(d, data, 50, value, y);
-                        let primera = primera_derivada(d, neighbours,  value, y);
+                        let primera = primera_derivada(d[value], d[y], data, 50,  value, y);
                         const ejex = largo_lineas*Math.sin(Math.atan(primera));
                         return (yScale(d[y]) + ejex);
                     })
