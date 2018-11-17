@@ -60,10 +60,10 @@ function streamline(x0, y0, dataset, distancia, x, y, limix, limsx, limy, deltax
     let k1, k2, k3, k4;
     while(limix < x1 && x1< limsx && 0 < y1 && y1 < limy)
     {
-        k1 = primera_derivada(x1, y1, dataset, distancia, x, y);
-        k2 = primera_derivada(x1 + 0.5*deltax, y1 + 0.5 * k1, dataset, distancia, x, y);
-        k3 = primera_derivada(x1 + 0.5*deltax, y1 + 0.5 * k2, dataset, distancia, x, y);
-        k4 = primera_derivada(x1 + deltax, y1 + k3, dataset, distancia, x, y);
+        k1 = deltax * primera_derivada(x1, y1, dataset, distancia, x, y);
+        k2 = deltax * primera_derivada(x1 + 0.5*deltax, y1 + 0.5 * k1, dataset, distancia, x, y);
+        k3 = deltax * primera_derivada(x1 + 0.5*deltax, y1 + 0.5 * k2, dataset, distancia, x, y);
+        k4 = deltax * primera_derivada(x1 + deltax, y1 + k3, dataset, distancia, x, y);
         x1 = x1 + deltax;
         y1 = y1 - (k1 + (2*k2 + 2*k3) + k4)/6;
         puntos.push({x:x1, y:y1});
