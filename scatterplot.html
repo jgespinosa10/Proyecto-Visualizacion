@@ -299,7 +299,7 @@ d3.csv("data.csv").then(function(data){
         body.append('br')
 
     xScale
-        .domain([d3.min(data, function(d) {return d['age'] * 1.1;}), d3.max(data, function(d) {return d['age'] * 1.1;})]);
+        .domain([d3.min(data, function(d) {return d['age'] * 0.95;}), d3.max(data, function(d) {return d['age'] * 1.05;})]);
     yScale
         .domain([0, d3.max(data, function(d) {return d['cholestoral'] * 1.1;})]);
     svg.select(".x-axis").transition()
@@ -310,14 +310,15 @@ d3.csv("data.csv").then(function(data){
         .call(yGen);
 
     var x = "age",
-        y = "cholestoral";
+        y = "cholestoral",
+        color = "sex";
 
     var lines = svg.selectAll(".line")
                         .data(data);
 
     var new_lines = lines
                         .enter().append("line")
-                                .attr("class", "lines")
+                                .attr("class", "derivadas")
                                 .attr("stroke", function(d){
                                             return colors(d['sex']);
                                         })
@@ -327,27 +328,24 @@ d3.csv("data.csv").then(function(data){
                                     .duration(1000)
                                         .attr("x1", function(d) {
                                             let primera = primera_derivada(d["age"], d["cholestoral"], data, 50,  "age", "cholestoral");
-                                            const ejex = 10*Math.cos(Math.atan(primera));
-                                            return (xScale(d['age']) + margin.left - ejex);
+                                            return (xScale(d['age']) - normalize(1, primera,10)[0]);
                                         })
                                         .attr("x2", function(d) {
                                             let primera = primera_derivada(d["age"], d["cholestoral"], data, 50,  "age", "cholestoral");
-                                            const ejex = 10*Math.cos(Math.atan(primera));
-                                            return xScale(d['age']) + margin.left + ejex;
+                                            return xScale(d['age']) + normalize(1, primera,10)[0];
                                         })
                                         .attr("y1", function(d) {
                                             let primera = primera_derivada(d["age"], d["cholestoral"], data, 50,  "age", "cholestoral");
-                                            const ejey = 10*Math.sin(Math.atan(primera));
-                                            return yScale(d['cholestoral']) - ejey;
+                                            return yScale(d['cholestoral']) - normalize(1, primera,10)[1];
                                         })
                                         .attr("y2", function(d) {
                                             let primera = primera_derivada(d["age"], d["cholestoral"], data, 50,  "age", "cholestoral");
                                             const ejey = 10*Math.sin(Math.atan(primera));
-                                            return yScale(d['cholestoral']) + ejey;
+                                            return yScale(d['cholestoral']) + normalize(1, primera,10)[1];
                                         });
         
     var hacerlineas = d3.line()
-                        .x(function(d) { return xScale(d.x) + margin.left;})
+                        .x(function(d) { return xScale(d.x);})
                         .y(function(d) { return yScale(d.y);});
 
     function hacerstreamlines() 
@@ -358,35 +356,89 @@ d3.csv("data.csv").then(function(data){
             svg.append("path")
                 .datum(streamline(d3.mean(data, function(d) {return d[x];}),
                                   d3.mean(data, function(d) {return d[y];}) - d3.deviation(data, function(d) {return d[y];})*0.2*i,
-                                  data, 150, x, y,
-                                  d3.min(data, function(d) {return d[x] *0.995;}),
-                                  d3.max(data, function(d) {return d[x] * 1.01;}), 
+                                  data, 200, x, y,
+                                  d3.min(data, function(d) {return d[x] * 0.995;}),
+                                  d3.max(data, function(d) {return d[x] * 1.05;}), 
                                   d3.max(data, function(d) {return d[y] * 1.1;}),
-                                  1))
+                                  100))
                 .attr("d", hacerlineas)
                 .attr("stroke", "orange")
                 .attr("stroke-width", 1)
                 .attr("fill", "none")
                 .attr("class", "paths")
-                .attr("opacity", 0.5);
+                .attr("opacity", 0.5)
+                .on("mouseover", function(d) {
+                    d3.select(d3.event.target)
+                        .attr("stroke-width", 3)
+                        .attr("stroke", "#0B186F")
+                        .attr("opacity", 0.9);
+                    d3.selectAll(".datacircle").filter(a => {
+                            for(let i = 0; i < d.length; i++)
+                            {
+                                let r = ((d[i].x - a[x])**2+(d[i].y - a[y])**2)**(1/2);
+                                if(r<=15) {
+                                    return true;
+                                };
+                            };
+                        })
+                        .transition()
+                        .duration(500)
+                        .attr("fill", "#0B186F");
+                })
+                .on("mouseout", function(d) {
+                    d3.select(d3.event.target)
+                        .attr("stroke-width", 1)
+                        .attr("stroke", "orange")
+                        .attr("opacity", 0.5);
+                    d3.selectAll(".datacircle").transition()
+                        .duration(1000)
+                        .attr("fill", function(a) {return colors(a[color]);});
+                });
         };
 
         for(let i = -1; i > -22; i--)
         {
             svg.append("path")
                 .datum(streamline(d3.mean(data, function(d) {return d[x];}),
-                                  d3.mean(data, function(d) {return d[y];}) - d3.deviation(data, function(d) {return d[y];})*0.2*i,
-                                  data, 150, x, y,
+                                  d3.mean(data, function(d) {return d[y];}) - d3.deviation(data, function(d) {return d[y];})*0.25*i,
+                                  data, 200, x, y,
                                   d3.min(data, function(d) {return d[x] *0.995;}),
-                                  d3.max(data, function(d) {return d[x] * 1.01;}), 
+                                  d3.max(data, function(d) {return d[x] * 1.05;}), 
                                   d3.max(data, function(d) {return d[y] * 1.1;}),
-                                  1))
+                                  100))
                 .attr("d", hacerlineas)
                 .attr("stroke", "orange")
                 .attr("stroke-width", 1)
                 .attr("fill", "none")
                 .attr("class", "paths")
-                .attr("opacity", 0.5);
+                .attr("opacity", 0.5)
+                .on("mouseover", function(d) {
+                    d3.select(d3.event.target)
+                        .attr("stroke-width", 3)
+                        .attr("stroke", "#0B186F")
+                        .attr("opacity", 0.9);
+                    d3.selectAll(".datacircle").filter(a => {
+                            for(let i = 0; i < d.length; i++)
+                            {
+                                let r = ((d[i].x - a[x])**2+(d[i].y - a[y])**2)**(1/2);
+                                if(r<=15) {
+                                    return true;
+                                };
+                            };
+                        })
+                        .transition()
+                        .duration(500)
+                        .attr("fill", "#0B186F");
+                })
+                .on("mouseout", function(d) {
+                    d3.select(d3.event.target)
+                        .attr("stroke-width", 1)
+                        .attr("stroke", "orange")
+                        .attr("opacity", 0.5);
+                    d3.selectAll(".datacircle").transition()
+                        .duration(1000)
+                        .attr("fill", function(a) {return colors(a[color]);});
+                });
         };
     };
     
@@ -438,7 +490,7 @@ d3.csv("data.csv").then(function(data){
                                 .transition()
                                     .duration(1000)
                                         .attr("cx", function(d) {
-                                            return xScale(d['age']) + margin.left;
+                                            return xScale(d['age']);
                                         })
                                         .attr("cy", function(d) {
                                             return yScale(d['cholestoral']);
@@ -463,37 +515,33 @@ d3.csv("data.csv").then(function(data){
         texto = labels[x];
         d3.selectAll("LabelX").text(texto);
         xScale
-            .domain([d3.min(data, function(d) {return d[value] * 1.1;}), d3.max(data, function(d) {return d[value] * 1.1;})]);
+            .domain([d3.min(data, function(d) {return d[x] * 0.95;}), d3.max(data, function(d) {return d[x] * 1.05;})]);
             svg.select(".x-axis").transition()
                 .duration(1000)
                 .call(xGen);
         d3.selectAll(".datacircle").transition()
             .duration(1000)
             .attr("cx", function(d) {
-                return xScale(d[value]) + margin.left;
+                return xScale(d[x]);
             });
-        d3.selectAll(".lines")
+        d3.selectAll(".derivadas")
             .transition()
                 .duration(1000)
                 .attr("x1", function(d) {
                     let primera = primera_derivada(d[x], d[y], data, 50,  x, y);
-                    const ejex = largo_lineas*Math.cos(Math.atan(primera));
-                    return (xScale(d[x]) + margin.left - ejex);
+                    return (xScale(d[x]) - normalize(1, primera,10)[0]);
                 })
                 .attr("x2", function(d) {
                     let primera = primera_derivada(d[x], d[y], data, 50,  x, y);
-                    const ejex = largo_lineas*Math.cos(Math.atan(primera));
-                    return (xScale(d[x]) + margin.left + ejex);
+                    return (xScale(d[x]) + normalize(1, primera,10)[0]);
                 })
                 .attr("y1", function(d) {
                     let primera = primera_derivada(d[x], d[y], data, 50,  x, y);
-                    const ejex = largo_lineas*Math.sin(Math.atan(primera));
-                    return (yScale(d[y]) - ejex);
+                    return (yScale(d[y]) - normalize(1, primera,10)[1]);
                 })
                 .attr("y2", function(d) {
                     let primera = primera_derivada(d[x], d[y], data, 50,  x, y);
-                    const ejex = largo_lineas*Math.sin(Math.atan(primera));
-                    return (yScale(d[y]) + ejex);
+                    return (yScale(d[y]) + normalize(1, primera,10)[1]);
                 })
         hacerstreamlines();
     };
@@ -503,57 +551,53 @@ d3.csv("data.csv").then(function(data){
         y = value
         redrawTextY(labels[y])
         yScale
-            .domain([0, d3.max(data, function(d) {return d[value] * 1.1;})]);
+            .domain([0, d3.max(data, function(d) {return d[y] * 1.1;})]);
         svg.select(".y-axis").transition()
             .duration(1000)
             .call(yGen);
         d3.selectAll(".datacircle").transition()
             .duration(1000)
             .attr("cy", function(d) {
-                return yScale(d[value]);
+                return yScale(d[y]);
             });
-        d3.selectAll(".lines")
+        d3.selectAll(".derivadas")
             .transition()
                 .duration(1000)
                 .attr("x1", function(d) {
                     let primera = primera_derivada(d[x], d[y], data, 50,  x, y);
-                    const ejex = largo_lineas*Math.cos(Math.atan(primera));
-                    return (xScale(d[x]) + margin.left - ejex);
+                    return (xScale(d[x]) - normalize(1, primera,10)[0]);
                 })
                 .attr("x2", function(d) {
                     let primera = primera_derivada(d[x], d[y], data, 50,  x, y);
-                    const ejex = largo_lineas*Math.cos(Math.atan(primera));
-                    return (xScale(d[x]) + margin.left + ejex);
+                    return (xScale(d[x]) + normalize(1, primera,10)[0]);
                 })
                 .attr("y1", function(d) {
                     let primera = primera_derivada(d[x], d[y], data, 50,  x, y);
-                    const ejex = largo_lineas*Math.sin(Math.atan(primera));
-                    return (yScale(d[y]) - ejex);
+                    return (yScale(d[y]) - normalize(1, primera,10)[1]);
                 })
                 .attr("y2", function(d) {
                     let primera = primera_derivada(d[x], d[y], data, 50,  x, y);
-                    const ejex = largo_lineas*Math.sin(Math.atan(primera));
-                    return (yScale(d[y]) + ejex);
+                    return (yScale(d[y]) + normalize(1, primera,10)[1]);
                 })
         hacerstreamlines();
     };
 
     function cChange() {
-        var value = diccio[this.value]
-        redrawLegend(value)
+        var color = diccio[this.value]
+        redrawLegend(color)
             d3.selectAll('.datacircle')
             .transition()
             .duration(1000)
-            .attr('fill',function (d) { return colors(d[value]) })
+            .attr('fill',function (d) { return colors(d[color]) })
 
-            d3.selectAll(".lines")
+            d3.selectAll(".derivadas")
             .transition()
             .duration(1000)
-            .attr('stroke',function (d) { return colors(d[value]) })
+            .attr('stroke',function (d) { return colors(d[color]) })
             d3.selectAll('datacircle')
             .transition()
             .duration(1000)
-            .attr('fill',function (d) { return colors(d[value]) })
+            .attr('fill',function (d) { return colors(d[color]) })
     };
     function redrawTextX(texto) {
         Xlabel
@@ -578,19 +622,19 @@ d3.csv("data.csv").then(function(data){
     function redrawLegend(value) {
         dict = lagendic[value]
         i = 0
-        for (x in dict) {
+        for (t in dict) {
             d3.select('.clegend' + i)
             .transition()
             .duration(500)
             .attr("opacity", 0)
-            .attr('fill',function (d) { return colors(x) })
+            .attr('fill',function (d) { return colors(t) })
             .transition()
             .duration(500)
             .attr("opacity", 1);
 
             d3.select(".legend" + i)
             .attr("opacity", 0)
-            .text(dict[x])
+            .text(dict[t])
             .transition()
             .duration(500)
             .attr("opacity", 1)
@@ -611,28 +655,24 @@ d3.csv("data.csv").then(function(data){
 
     function dChange() {
         var value = diccio[this.value]
-        d3.selectAll(".lines")
+        d3.selectAll(".derivadas")
         .transition()
             .duration(1000)
             .attr("x1", function(d) {
                     let primera = primera_derivada(d[value], d[y], data, 50,  value, y);
-                    const ejex = largo_lineas*Math.cos(Math.atan(primera));
-                    return (xScale(d[x]) + margin.left - ejex);
+                    return (xScale(d[x]) - normalize(1, primera,10)[0]);
                 })
                 .attr("x2", function(d) {
                     let primera = primera_derivada(d[value], d[y], data, 50,  value, y);
-                    const ejex = largo_lineas*Math.cos(Math.atan(primera));
-                    return (xScale(d[x]) + margin.left + ejex);
+                    return (xScale(d[x]) + normalize(1, primera,10)[0]);
                 })
                 .attr("y1", function(d) {
                     let primera = primera_derivada(d[value], d[y], data, 50,  value, y);
-                    const ejex = largo_lineas*Math.sin(Math.atan(primera));
-                    return (yScale(d[y]) - ejex);
+                    return (yScale(d[y]) - normalize(1, primera,10)[1]);
                 })
                 .attr("y2", function(d) {
                     let primera = primera_derivada(d[value], d[y], data, 50,  value, y);
-                    const ejex = largo_lineas*Math.sin(Math.atan(primera));
-                    return (yScale(d[y]) + ejex);
+                    return (yScale(d[y]) + normalize(1, primera,10)[1]);
                 })
     };
 })

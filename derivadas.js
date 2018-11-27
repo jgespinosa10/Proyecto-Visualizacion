@@ -9,6 +9,15 @@ function vecinos(x0, y0, dataset, distancia, x, y)
     return neighbours;
 }
 
+function normalize(x, y, scale) {
+    var norm = Math.sqrt(x * x + y * y);
+    if (norm != 0) { // as3 return 0,0 for a point of zero length
+      let xnew = scale * x / norm;
+      let ynew = scale * y / norm;
+      return [xnew, ynew]
+    }
+  }
+
 // calcula la derivada
 function primera_derivada(x0, y0, dataset, distancia, x, y)
 {
@@ -52,35 +61,37 @@ function smoothness(dataset, distancia, x, y)
     return 1/c;
 }
 
-function streamline(x0, y0, dataset, distancia, x, y, limix, limsx, limy, deltax)
+function streamline(x0, y0, dataset, distancia, x, y, limix, limsx, limy, cant)
 {
+    let deltax = (limsx - limix)/cant
     let puntos = [{x:x0, y:y0}];
     let x1 = x0;
     let y1 = y0;
     let k1, k2, k3, k4;
     while(limix < x1 && x1< limsx && 0 < y1 && y1 < limy)
     {
-        k1 = deltax * primera_derivada(x1, y1, dataset, distancia, x, y);
-        k2 = deltax * primera_derivada(x1 + 0.5*deltax, y1 + 0.5 * k1, dataset, distancia, x, y);
-        k3 = deltax * primera_derivada(x1 + 0.5*deltax, y1 + 0.5 * k2, dataset, distancia, x, y);
-        k4 = deltax * primera_derivada(x1 + deltax, y1 + k3, dataset, distancia, x, y);
+        k1 = primera_derivada(x1, y1, dataset, distancia, x, y);
+        k2 = primera_derivada(x1 + 0.5*deltax, y1 + 0.5 * k1, dataset, distancia, x, y);
+        k3 = primera_derivada(x1 + 0.5*deltax, y1 + 0.5 * k2, dataset, distancia, x, y);
+        k4 = primera_derivada(x1 + deltax, y1 + k3, dataset, distancia, x, y);
         x1 = x1 + deltax;
-        y1 = y1 - (k1 + (2*k2 + 2*k3) + k4)/6;
+        y1 = y1 - deltax * (k1 + (2*k2 + 2*k3) + k4)/6;
         puntos.push({x:x1, y:y1});
     };
 
     x1 = x0;
     y1 = y0;
+    deltax = -deltax;
     
     while(limix < x1 && x1< limsx && 0 < y1 && y1 < limy)
     {
-        k1 = deltax * primera_derivada(x1, y1, dataset, distancia, x, y);
-        k2 = deltax * primera_derivada(x1 - 0.5*deltax, y1 - 0.5 * k1, dataset, distancia, x, y);
-        k3 = deltax * primera_derivada(x1 - 0.5*deltax, y1 - 0.5 * k2, dataset, distancia, x, y);
-        k4 = deltax * primera_derivada(x1 - deltax, y1 - k3, dataset, distancia, x, y);
+        k1 = primera_derivada(x1, y1, dataset, distancia, x, y);
+        k2 = primera_derivada(x1 + 0.5*deltax, y1 + 0.5 * k1 * deltax, dataset, distancia, x, y);
+        k3 = primera_derivada(x1 + 0.5*deltax, y1 + 0.5 * k2 * deltax, dataset, distancia, x, y);
+        k4 = primera_derivada(x1 + deltax, y1 + k3 * deltax, dataset, distancia, x, y);
 
-        x1 = x1 - deltax;
-        y1 = y1 + (k1 + (2*k2) + (2*k3) + k4)/6;
+        x1 = x1 + deltax;
+        y1 = y1 - deltax * (k1 + (2*k2) + (2*k3) + k4)/6;
         puntos.unshift({x:x1, y:y1});
     };
     return puntos;
