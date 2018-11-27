@@ -376,7 +376,7 @@ d3.csv("data.csv").then(function(data){
                             for(let i = 0; i < d.length; i++)
                             {
                                 let r = ((d[i].x - a[x])**2+(d[i].y - a[y])**2)**(1/2);
-                                if(r<=15) {
+                                if(r<= d3.deviation(data, function(d) {return d[y];})*0.25) {
                                     return true;
                                 };
                             };
@@ -391,7 +391,7 @@ d3.csv("data.csv").then(function(data){
                         .attr("stroke", "orange")
                         .attr("opacity", 0.5);
                     d3.selectAll(".datacircle").transition()
-                        .duration(1000)
+                        .duration(500)
                         .attr("fill", function(a) {return colors(a[color]);});
                 });
         };
@@ -421,7 +421,7 @@ d3.csv("data.csv").then(function(data){
                             for(let i = 0; i < d.length; i++)
                             {
                                 let r = ((d[i].x - a[x])**2+(d[i].y - a[y])**2)**(1/2);
-                                if(r<=15) {
+                                if(r <= d3.deviation(data, function(d) {return d[y];})*0.25) {
                                     return true;
                                 };
                             };
