@@ -95,6 +95,47 @@
 
     <!-- Page Content -->
     <div class="container">
+      <div class="row">
+        <div class="col-6 justify-content-md-center" id="content">
+        </div>
+        <div class="col-6" id = "inputs">
+
+          <br>
+          <button type="button" class="btn btn-outline-info" onclick= "cambiarlineas()">Toggle Lines</button>
+          <div class="input-group mb-3">
+            <div class="input-group-prepend">
+              <label class="input-group-text" for="xSelect">X</label>
+            </div>
+            <select class="custom-select" id="xSelect">
+            </select>
+          </div>
+
+          <div class="input-group mb-3">
+            <div class="input-group-prepend">
+              <label class="input-group-text" for="ySelect">Y</label>
+            </div>
+            <select class="custom-select" id="ySelect">
+            </select>
+          </div>
+
+          <div class="input-group mb-3">
+            <div class="input-group-prepend">
+              <label class="input-group-text" for="dSelect">Derivative X</label>
+            </div>
+            <select class="custom-select" id="dSelect">
+            </select>
+          </div>
+
+          <div class="input-group mb-3">
+            <div class="input-group-prepend">
+              <label class="input-group-text" for="cSelect">Categorical</label>
+            </div>
+            <select class="custom-select" id="cSelect">
+            </select>
+          </div>
+
+        </div>
+      </div>
     </div>
     <script>
 
@@ -102,11 +143,13 @@ var margin = {top: 30, bottom: 30, left: 50, right:30},
     width = 600 - margin.left - margin.right,
     height = 600 - margin.top - margin.bottom,
     transitionDuration = 1000,
-    svg = d3.select("body").append("svg")
+    svg = d3.select("#content").append("svg")
+
                     .attr("height", height + margin.top + margin.bottom)
                     .attr("width", width + margin.left + margin.right + 150)
                     .append("g")
                         .attr("transform", "translate(" + margin.left + "," + margin.top + ")"),
+    color = 0,
     xScale = d3.scaleLinear()
                 .range([0, width]),
     yScale = d3.scaleLinear()
@@ -135,7 +178,7 @@ var margin = {top: 30, bottom: 30, left: 50, right:30},
           .attr("class", "label-x")
           .attr("transform",
                 "translate(" + (width/2) + " ," +
-                               (height + margin.top*4/5) + ")")
+                               (height + margin.top) + ")")
           .attr("style", "font-size: 20")
           .style("text-anchor", "middle")
           .text("Age (Years)"),
@@ -318,13 +361,13 @@ d3.csv("data.csv").then(function(data){
         d['thal'] = +d['thal']
         d['diagnosis'] = +d['diagnosis']
     });
+    var inputs = d3.select("#inputs")
+    inputs.append('br');
 
     // Select X-axis Variable
-    var span = body.append('span')
-    .text('Select X-Axis variable: ')
-    .attr("transform", "translate("+ width/2 + ",0)");
-    var yInput = body.append('select')
-        .attr('id','xSelect')
+
+    var xInput = d3.select('#xSelect')
+
         .on('change',xChange)
     .selectAll('option')
         .data(selectData)
@@ -332,15 +375,12 @@ d3.csv("data.csv").then(function(data){
     .append('option')
         .attr('value', function (d) { return d.text })
         .text(function (d) { return d.text ;});
-    
-    body.append('br');
+
+    inputs.append('br');
 
     // Select Y-axis Variable
-    var span = body.append('span')
-        .attr("transform", "translate("+ width/2 + ",0)")
-        .text('Select Y-Axis variable: ');
-    var yInput = body.append('select')
-        .attr('id','ySelect')
+
+    var yInput = d3.select('#ySelect')
         .on('change',yChange)
     .selectAll('option')
         .data(selectData)
@@ -348,14 +388,10 @@ d3.csv("data.csv").then(function(data){
     .append('option')
         .attr('value', function (d) { return d.text })
         .text(function (d) { return d.text ;});
-    
-    body.append('br');
 
-    var span = body.append('span')
-            .attr("transform", "translate("+ width/2 + ",0)")
-            .text('Select dx variable: ');
-    var yInput = body.append('select')
-        .attr('id','dSelect')
+    inputs.append('br');
+
+    var dInput = d3.select('#dSelect')
         .on('change',dChange)
     .selectAll('option')
         .data(selectData)
@@ -364,13 +400,10 @@ d3.csv("data.csv").then(function(data){
         .attr('value', function (d) { return d.text })
         .text(function (d) { return d.text ;});
 
-    body.append('br');
+    inputs.append('br');
 
     // Select categorical variable
-    var span = body.append('span')
-            .text('Select Categorical variable: ');
-    var yInput = body.append('select')
-        .attr('id','CSelect')
+    var cInput = d3.select('#cSelect')
         .on('change',cChange)
     .selectAll('option')
         .data(selectCategorical)
@@ -425,12 +458,12 @@ d3.csv("data.csv").then(function(data){
                                             const ejey = 10*Math.sin(Math.atan(primera));
                                             return yScale(d['cholestoral']) + normalize(1, primera,10)[1];
                                         });
-        
+
     var hacerlineas = d3.line()
                         .x(function(d) { return xScale(d.x);})
                         .y(function(d) { return yScale(d.y);});
 
-    function hacerstreamlines() 
+    function hacerstreamlines()
     {
         d3.selectAll(".paths").remove()
         for(let i = 0; i < 22; i++)
@@ -440,7 +473,7 @@ d3.csv("data.csv").then(function(data){
                                   d3.mean(data, function(d) {return d[y];}) - d3.deviation(data, function(d) {return d[y];})*0.2*i,
                                   data, 200, x, y,
                                   d3.min(data, function(d) {return d[x] * 0.995;}),
-                                  d3.max(data, function(d) {return d[x] * 1.05;}), 
+                                  d3.max(data, function(d) {return d[x] * 1.05;}),
                                   d3.max(data, function(d) {return d[y] * 1.1;}),
                                   100))
                 .attr("d", hacerlineas)
@@ -454,6 +487,9 @@ d3.csv("data.csv").then(function(data){
                         .attr("stroke-width", 3)
                         .attr("stroke", "#0B186F")
                         .attr("opacity", 0.9);
+                    d3.selectAll(".datacircle").transition()
+                        .attr('r',radio_circulos)
+                        .attr('stroke-width',0);
                     d3.selectAll(".datacircle").filter(a => {
                             for(let i = 0; i < d.length; i++)
                             {
@@ -485,7 +521,7 @@ d3.csv("data.csv").then(function(data){
                                   d3.mean(data, function(d) {return d[y];}) - d3.deviation(data, function(d) {return d[y];})*0.25*i,
                                   data, 200, x, y,
                                   d3.min(data, function(d) {return d[x] *0.995;}),
-                                  d3.max(data, function(d) {return d[x] * 1.05;}), 
+                                  d3.max(data, function(d) {return d[x] * 1.05;}),
                                   d3.max(data, function(d) {return d[y] * 1.1;}),
                                   100))
                 .attr("d", hacerlineas)
@@ -523,9 +559,9 @@ d3.csv("data.csv").then(function(data){
                 });
         };
     };
-    
+
     hacerstreamlines();
-    
+
     var exit_lines = lines
                         .exit()
                         .transition()
@@ -580,7 +616,7 @@ d3.csv("data.csv").then(function(data){
                                         .attr("fill", function(d) {
                                             return colors(d['sex']);
                                         });
-    
+
 
       var exit_bars = bars
                           .exit()
@@ -665,7 +701,7 @@ d3.csv("data.csv").then(function(data){
     };
 
     function cChange() {
-        var color = diccio[this.value]
+        color = diccio[this.value]
         redrawLegend(color)
             d3.selectAll('.datacircle')
             .transition()
@@ -690,7 +726,7 @@ d3.csv("data.csv").then(function(data){
         .style("opacity", 1)
         .text(texto)
     };
-    
+
     function redrawTextY(texto) {
         Ylabel
         .transition()
@@ -775,7 +811,6 @@ function cambiarlineas() {
     <!-- /.container -->
 
     <!-- Bootstrap core JavaScript -->
- <button type="button" onclick= "cambiarlineas()">Toggle Lines</button>
 
   </body>
 
