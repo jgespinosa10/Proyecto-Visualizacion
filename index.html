@@ -556,7 +556,8 @@ d3.csv("data.csv").then(function(data){
                 });
         };
     d3.selectAll(".paths").style("opacity", 0)
-    lineas = 0};
+    lineas = 0
+    };
 
     hacerstreamlines();
 
@@ -660,7 +661,8 @@ d3.csv("data.csv").then(function(data){
                     let primera = primera_derivada(d[x], d[y], data, radius,  x, y);
                     return (yScale(d[y]) + normalize(1, primera,10)[1]);
                 })
-        hacerstreamlines();
+        hacerstreamlines()
+        slider1.value(50);
     };
 
     function yChange(radius = 50) {
@@ -696,7 +698,8 @@ d3.csv("data.csv").then(function(data){
                     let primera = primera_derivada(d[x], d[y], data, radius,  x, y);
                     return (yScale(d[y]) + normalize(1, primera,10)[1]);
                 })
-        hacerstreamlines();
+        hacerstreamlines()
+        slider1.value(50);
     };
 
     function cChange() {
