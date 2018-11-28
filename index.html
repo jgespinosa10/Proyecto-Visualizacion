@@ -1,23 +1,102 @@
+
 <!DOCTYPE html>
-<html>
-<head>
+<html lang="en">
+
+  <head>
+
     <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="">
+    <meta name="author" content="">
     <script src="https://d3js.org/d3.v5.js"></script>
     <script src="https://d3js.org/d3-selection-multi.v1.min.js"></script>
     <script src="derivadas.js"></script>
-</head>
-<style>
+    <script src="d3.button.js"></script>
 
+    <title>Scatterplot Streamlines</title>
 
-text {
-  fill: #000;
-  font: 10px sans-serif;
-  pointer-events: none;
+    <!-- Bootstrap core CSS -->
+    <link href="vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Custom styles for this template -->
+    <link href="css/logo-nav.css" rel="stylesheet">
+
+  </head>
+  <style>
+  .button rect {
+  stroke: #999faa; /* navy 40% */
+  stroke-width: 2px;
 }
 
+.button rect.pressed {
+  fill: #000f2b; /* navy 100% */
+}
+
+.button #gradient-start {
+  stop-color: #999faa; /* navy 40% */
+  stop-opacity: 1;
+}
+
+.button #gradient-stop {
+  stop-color: #4d576b; /* navy 70% */
+  stop-opacity: 1;
+}
+
+.button #gradient-start.active, .button #gradient-start.pressed {
+  stop-color: #4d576b; /* navy 70% */
+}
+
+.button #gradient-stop.active, .button #gradient-stop.pressed {
+  stop-color: #000f2b; /* navy 100% */
+}
+
+.button text {
+  font-size: 30px;
+  fill: #eee;
+  pointer-events: none;
+  text-anchor: middle;
+  -moz-user-select: none;
+  -webkit-user-select: none;
+  -ms-user-select: none;
+}
 </style>
-<body>
-<script>
+
+  <body>
+
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
+      <div class="container">
+        <a class="navbar-brand" href="#">
+          <img src="resources/logo.png" width="150" height="50" alt="">
+        </a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarResponsive">
+          <ul class="navbar-nav ml-auto">
+            <li class="nav-item active">
+              <a class="nav-link" href="#">Visualization
+                <span class="sr-only">(current)</span>
+              </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="#">Explanation</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="#">About</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="#">Contact</a>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+
+    <!-- Page Content -->
+    <div class="container">
+    </div>
+    <script>
 
 var margin = {top: 30, bottom: 30, left: 50, right:30},
     width = 600 - margin.left - margin.right,
@@ -43,23 +122,23 @@ var margin = {top: 30, bottom: 30, left: 50, right:30},
     yAxis = svg.append("g")
                 .attr("class", "y-axis")
                 .call(yGen),
-	Ylabel = svg.append("text")
-			  .attr("class", "label-y")
-			  .attr("transform", "rotate(-90)")
-			  .attr("y", 0 - margin.left)
-			  .attr("x",0 - (height / 2))
-			  .attr("dy", "1em")
-			  .attr("style", "font-size: 20")
-			  .style("text-anchor", "middle")
-			  .text("Cholestoral (mg/dl)"),
-	Xlabel = svg.append("text")
-				  .attr("class", "label-x")
-				  .attr("transform",
-				        "translate(" + (width/2) + " ," +
-				                       (height + margin.top*4/5) + ")")
-				  .attr("style", "font-size: 20")
-				  .style("text-anchor", "middle")
-				  .text("Age (Years)"),
+  Ylabel = svg.append("text")
+        .attr("class", "label-y")
+        .attr("transform", "rotate(-90)")
+        .attr("y", 0 - margin.left)
+        .attr("x",0 - (height / 2))
+        .attr("dy", "1em")
+        .attr("style", "font-size: 20")
+        .style("text-anchor", "middle")
+        .text("Cholestoral (mg/dl)"),
+  Xlabel = svg.append("text")
+          .attr("class", "label-x")
+          .attr("transform",
+                "translate(" + (width/2) + " ," +
+                               (height + margin.top*4/5) + ")")
+          .attr("style", "font-size: 20")
+          .style("text-anchor", "middle")
+          .text("Age (Years)"),
     colors = d3.scaleOrdinal(d3.schemeCategory10),
     tooltip = d3.select("body").append("div")
                 .style("position", "absolute")
@@ -67,105 +146,105 @@ var margin = {top: 30, bottom: 30, left: 50, right:30},
                 .style("left", "50px")
                 .style("top", "50px")
                 .style("opacity", 0),
-	legendw = width + 50
+  legendw = width + 50
     legendh = height*2/3
     LLabel = svg.append("text")
-				  .attr("class", "label-x")
-				  .attr("transform",
-				        "translate(" + (width + 50) + " ," +
-				                       (height*2/3) + ")")
-				  .attr("style", "font-size: 20")
-				  .style("text-anchor", "left")
-				  .text("Legend");
-	Lcircle1 = svg.append("circle")
-							.attr("class","clegend0")
-							.attr("r", 4)
-							.attr("transform",
-					        "translate(" + (legendw-5) + " ," +
-					                       (legendh + 15) + ")")
+          .attr("class", "label-x")
+          .attr("transform",
+                "translate(" + (width + 50) + " ," +
+                               (height*2/3) + ")")
+          .attr("style", "font-size: 20")
+          .style("text-anchor", "left")
+          .text("Legend");
+  Lcircle1 = svg.append("circle")
+              .attr("class","clegend0")
+              .attr("r", 4)
+              .attr("transform",
+                  "translate(" + (legendw-5) + " ," +
+                                 (legendh + 15) + ")")
                             .attr('stroke','black')
                             .attr('stroke-width',0)
                             .attr("fill", colors(0))
     Lcircle2 = svg.append("circle")
-    						.attr("class","clegend1")
-							.attr("r", 4)
-							.attr("transform",
-					        "translate(" + (legendw-5) + " ," +
-					                       (legendh + 30) + ")")
+                .attr("class","clegend1")
+              .attr("r", 4)
+              .attr("transform",
+                  "translate(" + (legendw-5) + " ," +
+                                 (legendh + 30) + ")")
                             .attr('stroke','black')
                             .attr('stroke-width',0)
                             .attr("fill", colors(1))
     Lcircle3 = svg.append("circle")
-    						.attr("class","clegend2")
-							.attr("r", 4)
-							.attr("opacity", 0)
-							.attr("transform",
-					        "translate(" + (legendw-5) + " ," +
-					                       (legendh + 45) + ")")
+                .attr("class","clegend2")
+              .attr("r", 4)
+              .attr("opacity", 0)
+              .attr("transform",
+                  "translate(" + (legendw-5) + " ," +
+                                 (legendh + 45) + ")")
                             .attr('stroke','black')
                             .attr('stroke-width',0)
                             .attr("fill", colors(1))
     Lcircle4 = svg.append("circle")
-    						.attr("class","clegend3")
-							.attr("r", 4)
-							.attr("transform",
-					        "translate(" + (legendw-5) + " ," +
-					                       (legendh + 60) + ")")
-							.attr("opacity", 0)
+                .attr("class","clegend3")
+              .attr("r", 4)
+              .attr("transform",
+                  "translate(" + (legendw-5) + " ," +
+                                 (legendh + 60) + ")")
+              .attr("opacity", 0)
                             .attr('stroke','black')
                             .attr('stroke-width',0)
                             .attr("fill", colors(1))
     Lcircle5 = svg.append("circle")
-    						.attr("class","clegend4")
-							.attr("r", 4)
-							.attr("opacity", 0)
-							.attr("transform",
-					        "translate(" + (legendw-5) + " ," +
-					                       (legendh + 75) + ")")
+                .attr("class","clegend4")
+              .attr("r", 4)
+              .attr("opacity", 0)
+              .attr("transform",
+                  "translate(" + (legendw-5) + " ," +
+                                 (legendh + 75) + ")")
                             .attr('stroke','black')
                             .attr('stroke-width',0)
                             .attr("fill", colors(1))
 
     Ltext1 = svg.append("text")
-				  .attr("class", "legend0")
-				  .attr("transform",
-				        "translate(" + (legendw) + " ," +
-				                       (legendh +20) + ")")
-				  .attr("style", "font-size: 20")
-				  .style("text-anchor", "left")
-				  .text("Male");
-	Ltext2 = svg.append("text")
-				  .attr("class", "legend1")
-				  .attr("transform",
-				        "translate(" + (legendw) + " ," +
-				                       (legendh + 35) + ")")
-				  .attr("style", "font-size: 20")
-				  .style("text-anchor", "left")
-				  .text("Female");
-	Ltext3 = svg.append("text")
-			  .attr("class", "legend2")
-			  .attr("transform",
-			        "translate(" + (legendw) + " ," +
-			                       (legendh + 50) + ")")
-			  .attr("style", "font-size: 20")
-			  .style("text-anchor", "left")
-			  .text("");
-	Ltext4 = svg.append("text")
-			  .attr("class", "legend3")
-			  .attr("transform",
-			        "translate(" + (legendw) + " ," +
-			                       (legendh + 65) + ")")
-			  .attr("style", "font-size: 20")
-			  .style("text-anchor", "left")
-			  .text("");
-	Ltext5 = svg.append("text")
-			  .attr("class", "legend4")
-			  .attr("transform",
-			        "translate(" + (legendw) + " ," +
-			                       (legendh + 80) + ")")
-			  .attr("style", "font-size: 20")
-			  .style("text-anchor", "left")
-			  .text("");
+          .attr("class", "legend0")
+          .attr("transform",
+                "translate(" + (legendw) + " ," +
+                               (legendh +20) + ")")
+          .attr("style", "font-size: 20")
+          .style("text-anchor", "left")
+          .text("Male");
+  Ltext2 = svg.append("text")
+          .attr("class", "legend1")
+          .attr("transform",
+                "translate(" + (legendw) + " ," +
+                               (legendh + 35) + ")")
+          .attr("style", "font-size: 20")
+          .style("text-anchor", "left")
+          .text("Female");
+  Ltext3 = svg.append("text")
+        .attr("class", "legend2")
+        .attr("transform",
+              "translate(" + (legendw) + " ," +
+                             (legendh + 50) + ")")
+        .attr("style", "font-size: 20")
+        .style("text-anchor", "left")
+        .text("");
+  Ltext4 = svg.append("text")
+        .attr("class", "legend3")
+        .attr("transform",
+              "translate(" + (legendw) + " ," +
+                             (legendh + 65) + ")")
+        .attr("style", "font-size: 20")
+        .style("text-anchor", "left")
+        .text("");
+  Ltext5 = svg.append("text")
+        .attr("class", "legend4")
+        .attr("transform",
+              "translate(" + (legendw) + " ," +
+                             (legendh + 80) + ")")
+        .attr("style", "font-size: 20")
+        .style("text-anchor", "left")
+        .text("");
 
     radio_circulos = 3,
     largo_lineas = 10;
@@ -242,7 +321,8 @@ d3.csv("data.csv").then(function(data){
 
     // Select X-axis Variable
     var span = body.append('span')
-    .text('Select X-Axis variable: ');
+    .text('Select X-Axis variable: ')
+    .attr("transform", "translate("+ width/2 + ",0)");
     var yInput = body.append('select')
         .attr('id','xSelect')
         .on('change',xChange)
@@ -257,6 +337,7 @@ d3.csv("data.csv").then(function(data){
 
     // Select Y-axis Variable
     var span = body.append('span')
+        .attr("transform", "translate("+ width/2 + ",0)")
         .text('Select Y-Axis variable: ');
     var yInput = body.append('select')
         .attr('id','ySelect')
@@ -271,6 +352,7 @@ d3.csv("data.csv").then(function(data){
     body.append('br');
 
     var span = body.append('span')
+            .attr("transform", "translate("+ width/2 + ",0)")
             .text('Select dx variable: ');
     var yInput = body.append('select')
         .attr('id','dSelect')
@@ -296,7 +378,7 @@ d3.csv("data.csv").then(function(data){
     .append('option')
         .attr('value', function (d) { return d.text })
         .text(function (d) { return d.text ;})
-        body.append('br')
+        body.append('br');
 
     xScale
         .domain([d3.min(data, function(d) {return d['age'] * 0.95;}), d3.max(data, function(d) {return d['age'] * 1.05;})]);
@@ -367,7 +449,7 @@ d3.csv("data.csv").then(function(data){
                 .attr("fill", "none")
                 .attr("class", "paths")
                 .attr("opacity", 0.5)
-                .on("mouseover", function(d) {
+                .on("mouseover", function(d) {if (lineas == 1){
                     d3.select(d3.event.target)
                         .attr("stroke-width", 3)
                         .attr("stroke", "#0B186F")
@@ -384,7 +466,7 @@ d3.csv("data.csv").then(function(data){
                         .transition()
                         .duration(500)
                         .attr("fill", "#0B186F");
-                })
+                }})
                 .on("mouseout", function(d) {
                     d3.select(d3.event.target)
                         .attr("stroke-width", 1)
@@ -608,7 +690,7 @@ d3.csv("data.csv").then(function(data){
         .style("opacity", 1)
         .text(texto)
     };
-		
+    
     function redrawTextY(texto) {
         Ylabel
         .transition()
@@ -674,13 +756,28 @@ d3.csv("data.csv").then(function(data){
                     let primera = primera_derivada(d[value], d[y], data, 50,  value, y);
                     return (yScale(d[y]) + normalize(1, primera,10)[1]);
                 })
-    };
+    }
+    ;
 })
+var lineas = 1
+function cambiarlineas() {
+  if (lineas == 1) {
+    d3.selectAll(".paths").style("opacity", 0),
+    lineas = 0
+  }
+  else {
+    d3.selectAll(".paths").style("opacity", 0.5),
+    lineas = 1
+  }
+}
 
 </script>
+    <!-- /.container -->
 
-</body>
+    <!-- Bootstrap core JavaScript -->
+ <button type="button" onclick= "cambiarlineas()">Toggle Lines</button>
 
+  </body>
 
-
+</html>
 
