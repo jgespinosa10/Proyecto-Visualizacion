@@ -11,7 +11,7 @@
     <script src="https://d3js.org/d3.v5.js"></script>
     <script src="https://d3js.org/d3-selection-multi.v1.min.js"></script>
     <script src="derivadas.js"></script>
-    <script src="d3.button.js"></script>
+    <script src="https://unpkg.com/d3-simple-slider/build/d3-simple-slider.js"></script>
 
     <title>Scatterplot Streamlines</title>
 
@@ -97,7 +97,6 @@
     <div class="container">
     </div>
     <script>
-
 var margin = {top: 30, bottom: 30, left: 50, right:30},
     width = 600 - margin.left - margin.right,
     height = 600 - margin.top - margin.bottom,
@@ -108,7 +107,7 @@ var margin = {top: 30, bottom: 30, left: 50, right:30},
                     .append("g")
                         .attr("transform", "translate(" + margin.left + "," + margin.top + ")"),
     xScale = d3.scaleLinear()
-                .range([0, width]),
+                .range([0, 600 - margin.left - margin.right]),
     yScale = d3.scaleLinear()
                 .range([height, 0]),
     xGen = d3.axisBottom(xScale)
@@ -134,8 +133,8 @@ var margin = {top: 30, bottom: 30, left: 50, right:30},
   Xlabel = svg.append("text")
           .attr("class", "label-x")
           .attr("transform",
-                "translate(" + (width/2) + " ," +
-                               (height + margin.top*4/5) + ")")
+                "translate(" + (600 - margin.left - margin.right)/2 + " ," +
+                               (height + margin.top*4/5 + 2) + ")")
           .attr("style", "font-size: 20")
           .style("text-anchor", "middle")
           .text("Age (Years)"),
@@ -146,12 +145,12 @@ var margin = {top: 30, bottom: 30, left: 50, right:30},
                 .style("left", "50px")
                 .style("top", "50px")
                 .style("opacity", 0),
-  legendw = width + 50
+  legendw = 600 - margin.left - margin.right + 50
     legendh = height*2/3
     LLabel = svg.append("text")
           .attr("class", "label-x")
           .attr("transform",
-                "translate(" + (width + 50) + " ," +
+                "translate(" + (600 - margin.left - margin.right + 50) + " ," +
                                (height*2/3) + ")")
           .attr("style", "font-size: 20")
           .style("text-anchor", "left")
@@ -322,7 +321,7 @@ d3.csv("data.csv").then(function(data){
     // Select X-axis Variable
     var span = body.append('span')
     .text('Select X-Axis variable: ')
-    .attr("transform", "translate("+ width/2 + ",0)");
+    .attr("transform", "translate("+ (600 - margin.left - margin.right)/2 + ",0)");
     var yInput = body.append('select')
         .attr('id','xSelect')
         .on('change',xChange)
@@ -333,11 +332,48 @@ d3.csv("data.csv").then(function(data){
         .attr('value', function (d) { return d.text })
         .text(function (d) { return d.text ;});
     
+     var slider1 = d3.sliderHorizontal()
+    .min(20)
+    .max(100)
+    .width(300)
+    .ticks(5)
+    .default(50)
+    .on('onchange', function(cambio) {
+      var value = 
+      d3.selectAll(".derivadas")
+        .transition()
+            .duration(1000)
+            .attr("x1", function(d) {
+                    let primera = primera_derivada(d[x], d[y], data, cambio,  x, y);
+                    return (xScale(d[x]) - normalize(1, primera,10)[0]);
+                })
+                .attr("x2", function(d) {
+                    let primera = primera_derivada(d[x], d[y], data, cambio,  x, y);
+                    return (xScale(d[x]) + normalize(1, primera,10)[0]);
+                })
+                .attr("y1", function(d) {
+                    let primera = primera_derivada(d[x], d[y], data, cambio,  x, y);
+                    return (yScale(d[y]) - normalize(1, primera,10)[1]);
+                })
+                .attr("y2", function(d) {
+                    let primera = primera_derivada(d[x], d[y], data, cambio,  x, y);
+                    return (yScale(d[y]) + normalize(1, primera,10)[1]);
+                });
+    });
+
+    var group2 = d3.select("div#slider").append("svg")
+    .attr("width", 500)
+    .attr("height", 100)
+    .append("g")
+    .attr("transform", "translate(30,30)");
+
+  group2.call(slider1);
+
     body.append('br');
 
     // Select Y-axis Variable
     var span = body.append('span')
-        .attr("transform", "translate("+ width/2 + ",0)")
+        .attr("transform", "translate("+ (600 - margin.left - margin.right)/2 + ",0)")
         .text('Select Y-Axis variable: ');
     var yInput = body.append('select')
         .attr('id','ySelect')
@@ -352,8 +388,9 @@ d3.csv("data.csv").then(function(data){
     body.append('br');
 
     var span = body.append('span')
-            .attr("transform", "translate("+ width/2 + ",0)")
+            .attr("transform", "translate("+ (600 - margin.left - margin.right)/2 + ",0)")
             .text('Select dx variable: ');
+
     var yInput = body.append('select')
         .attr('id','dSelect')
         .on('change',dChange)
@@ -590,8 +627,9 @@ d3.csv("data.csv").then(function(data){
                                   .remove();
 
 
-    function xChange() {
+    function xChange(radius = 50) {
         var value = diccio[this.value]
+        console.log(value)
         x = value;
         redrawTextX(labels[x]);
         texto = labels[x];
@@ -610,25 +648,25 @@ d3.csv("data.csv").then(function(data){
             .transition()
                 .duration(1000)
                 .attr("x1", function(d) {
-                    let primera = primera_derivada(d[x], d[y], data, 50,  x, y);
+                    let primera = primera_derivada(d[x], d[y], data, radius,  x, y);
                     return (xScale(d[x]) - normalize(1, primera,10)[0]);
                 })
                 .attr("x2", function(d) {
-                    let primera = primera_derivada(d[x], d[y], data, 50,  x, y);
+                    let primera = primera_derivada(d[x], d[y], data, radius,  x, y);
                     return (xScale(d[x]) + normalize(1, primera,10)[0]);
                 })
                 .attr("y1", function(d) {
-                    let primera = primera_derivada(d[x], d[y], data, 50,  x, y);
+                    let primera = primera_derivada(d[x], d[y], data, radius,  x, y);
                     return (yScale(d[y]) - normalize(1, primera,10)[1]);
                 })
                 .attr("y2", function(d) {
-                    let primera = primera_derivada(d[x], d[y], data, 50,  x, y);
+                    let primera = primera_derivada(d[x], d[y], data, radius,  x, y);
                     return (yScale(d[y]) + normalize(1, primera,10)[1]);
                 })
         hacerstreamlines();
     };
 
-    function yChange() {
+    function yChange(radius = 50) {
         var value = diccio[this.value]
         y = value
         redrawTextY(labels[y])
@@ -646,19 +684,19 @@ d3.csv("data.csv").then(function(data){
             .transition()
                 .duration(1000)
                 .attr("x1", function(d) {
-                    let primera = primera_derivada(d[x], d[y], data, 50,  x, y);
+                    let primera = primera_derivada(d[x], d[y], data, radius,  x, y);
                     return (xScale(d[x]) - normalize(1, primera,10)[0]);
                 })
                 .attr("x2", function(d) {
-                    let primera = primera_derivada(d[x], d[y], data, 50,  x, y);
+                    let primera = primera_derivada(d[x], d[y], data, radius,  x, y);
                     return (xScale(d[x]) + normalize(1, primera,10)[0]);
                 })
                 .attr("y1", function(d) {
-                    let primera = primera_derivada(d[x], d[y], data, 50,  x, y);
+                    let primera = primera_derivada(d[x], d[y], data, radius,  x, y);
                     return (yScale(d[y]) - normalize(1, primera,10)[1]);
                 })
                 .attr("y2", function(d) {
-                    let primera = primera_derivada(d[x], d[y], data, 50,  x, y);
+                    let primera = primera_derivada(d[x], d[y], data, radius,  x, y);
                     return (yScale(d[y]) + normalize(1, primera,10)[1]);
                 })
         hacerstreamlines();
@@ -735,25 +773,25 @@ d3.csv("data.csv").then(function(data){
             i++
         }}
 
-    function dChange() {
+    function dChange(radius = 50) {
         var value = diccio[this.value]
         d3.selectAll(".derivadas")
         .transition()
             .duration(1000)
             .attr("x1", function(d) {
-                    let primera = primera_derivada(d[value], d[y], data, 50,  value, y);
+                    let primera = primera_derivada(d[value], d[y], data, radius,  value, y);
                     return (xScale(d[x]) - normalize(1, primera,10)[0]);
                 })
                 .attr("x2", function(d) {
-                    let primera = primera_derivada(d[value], d[y], data, 50,  value, y);
+                    let primera = primera_derivada(d[value], d[y], data, radius,  value, y);
                     return (xScale(d[x]) + normalize(1, primera,10)[0]);
                 })
                 .attr("y1", function(d) {
-                    let primera = primera_derivada(d[value], d[y], data, 50,  value, y);
+                    let primera = primera_derivada(d[value], d[y], data, radius,  value, y);
                     return (yScale(d[y]) - normalize(1, primera,10)[1]);
                 })
                 .attr("y2", function(d) {
-                    let primera = primera_derivada(d[value], d[y], data, 50,  value, y);
+                    let primera = primera_derivada(d[value], d[y], data, radius,  value, y);
                     return (yScale(d[y]) + normalize(1, primera,10)[1]);
                 })
     }
@@ -775,6 +813,7 @@ function cambiarlineas() {
     <!-- /.container -->
 
     <!-- Bootstrap core JavaScript -->
+    <div id = "slider"></div>
  <button type="button" onclick= "cambiarlineas()">Toggle Lines</button>
 
   </body>
