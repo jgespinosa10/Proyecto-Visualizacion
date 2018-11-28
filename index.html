@@ -11,7 +11,7 @@
     <script src="https://d3js.org/d3.v5.js"></script>
     <script src="https://d3js.org/d3-selection-multi.v1.min.js"></script>
     <script src="derivadas.js"></script>
-    <script src="d3.button.js"></script>
+    <script src="https://unpkg.com/d3-simple-slider/build/d3-simple-slider.js"></script>
 
     <title>Scatterplot Streamlines</title>
 
@@ -23,41 +23,8 @@
 
   </head>
   <style>
-  .button rect {
-  stroke: #999faa; /* navy 40% */
-  stroke-width: 2px;
-}
-
-.button rect.pressed {
-  fill: #000f2b; /* navy 100% */
-}
-
-.button #gradient-start {
-  stop-color: #999faa; /* navy 40% */
-  stop-opacity: 1;
-}
-
-.button #gradient-stop {
-  stop-color: #4d576b; /* navy 70% */
-  stop-opacity: 1;
-}
-
-.button #gradient-start.active, .button #gradient-start.pressed {
-  stop-color: #4d576b; /* navy 70% */
-}
-
-.button #gradient-stop.active, .button #gradient-stop.pressed {
-  stop-color: #000f2b; /* navy 100% */
-}
-
-.button text {
-  font-size: 30px;
-  fill: #eee;
-  pointer-events: none;
-  text-anchor: middle;
-  -moz-user-select: none;
-  -webkit-user-select: none;
-  -ms-user-select: none;
+  p {
+    margin: 25px;
 }
 </style>
 
@@ -133,12 +100,13 @@
             <select class="custom-select" id="cSelect">
             </select>
           </div>
+          <p> Select Radius: <p>
+          <div id = "slider"></div>
 
         </div>
       </div>
     </div>
     <script>
-
 var margin = {top: 30, bottom: 30, left: 50, right:30},
     width = 600 - margin.left - margin.right,
     height = 600 - margin.top - margin.bottom,
@@ -151,7 +119,7 @@ var margin = {top: 30, bottom: 30, left: 50, right:30},
                         .attr("transform", "translate(" + margin.left + "," + margin.top + ")"),
     color = 0,
     xScale = d3.scaleLinear()
-                .range([0, width]),
+                .range([0, 600 - margin.left - margin.right]),
     yScale = d3.scaleLinear()
                 .range([height, 0]),
     xGen = d3.axisBottom(xScale)
@@ -189,16 +157,8 @@ var margin = {top: 30, bottom: 30, left: 50, right:30},
                 .style("left", "50px")
                 .style("top", "50px")
                 .style("opacity", 0),
-  legendw = width + 50
-    legendh = height*2/3
-    LLabel = svg.append("text")
-          .attr("class", "label-x")
-          .attr("transform",
-                "translate(" + (width + 50) + " ," +
-                               (height*2/3) + ")")
-          .attr("style", "font-size: 20")
-          .style("text-anchor", "left")
-          .text("Legend");
+  legendw = 600 - margin.left - margin.right + 30
+    legendh = height*2/3 + 10
   Lcircle1 = svg.append("circle")
               .attr("class","clegend0")
               .attr("r", 4)
@@ -367,7 +327,6 @@ d3.csv("data.csv").then(function(data){
     // Select X-axis Variable
 
     var xInput = d3.select('#xSelect')
-
         .on('change',xChange)
     .selectAll('option')
         .data(selectData)
@@ -377,9 +336,47 @@ d3.csv("data.csv").then(function(data){
         .text(function (d) { return d.text ;});
 
     inputs.append('br');
+    
+    var slider1 = d3.sliderHorizontal()
+    .min(20)
+    .max(100)
+    .width(300)
+    .ticks(5)
+    .default(50)
+    .on('onchange', function(cambio) {
+      var value = 
+      d3.selectAll(".derivadas")
+        .transition()
+            .duration(1000)
+            .attr("x1", function(d) {
+                    let primera = primera_derivada(d[x], d[y], data, cambio,  x, y);
+                    return (xScale(d[x]) - normalize(1, primera,10)[0]);
+                })
+                .attr("x2", function(d) {
+                    let primera = primera_derivada(d[x], d[y], data, cambio,  x, y);
+                    return (xScale(d[x]) + normalize(1, primera,10)[0]);
+                })
+                .attr("y1", function(d) {
+                    let primera = primera_derivada(d[x], d[y], data, cambio,  x, y);
+                    return (yScale(d[y]) - normalize(1, primera,10)[1]);
+                })
+                .attr("y2", function(d) {
+                    let primera = primera_derivada(d[x], d[y], data, cambio,  x, y);
+                    return (yScale(d[y]) + normalize(1, primera,10)[1]);
+                });
+    });
 
-    // Select Y-axis Variable
+    var group2 = d3.select("div#slider").append("svg")
+    .attr("width", 500)
+    .attr("height", 100)
+    .append("g")
+    .attr("transform", "translate(100,10)");
 
+  group2.call(slider1);
+
+    body.append('br');
+
+   // Select Y-axis Variable
     var yInput = d3.select('#ySelect')
         .on('change',yChange)
     .selectAll('option')
@@ -626,8 +623,9 @@ d3.csv("data.csv").then(function(data){
                                   .remove();
 
 
-    function xChange() {
+    function xChange(radius = 50) {
         var value = diccio[this.value]
+        console.log(value)
         x = value;
         redrawTextX(labels[x]);
         texto = labels[x];
@@ -646,25 +644,25 @@ d3.csv("data.csv").then(function(data){
             .transition()
                 .duration(1000)
                 .attr("x1", function(d) {
-                    let primera = primera_derivada(d[x], d[y], data, 50,  x, y);
+                    let primera = primera_derivada(d[x], d[y], data, radius,  x, y);
                     return (xScale(d[x]) - normalize(1, primera,10)[0]);
                 })
                 .attr("x2", function(d) {
-                    let primera = primera_derivada(d[x], d[y], data, 50,  x, y);
+                    let primera = primera_derivada(d[x], d[y], data, radius,  x, y);
                     return (xScale(d[x]) + normalize(1, primera,10)[0]);
                 })
                 .attr("y1", function(d) {
-                    let primera = primera_derivada(d[x], d[y], data, 50,  x, y);
+                    let primera = primera_derivada(d[x], d[y], data, radius,  x, y);
                     return (yScale(d[y]) - normalize(1, primera,10)[1]);
                 })
                 .attr("y2", function(d) {
-                    let primera = primera_derivada(d[x], d[y], data, 50,  x, y);
+                    let primera = primera_derivada(d[x], d[y], data, radius,  x, y);
                     return (yScale(d[y]) + normalize(1, primera,10)[1]);
                 })
         hacerstreamlines();
     };
 
-    function yChange() {
+    function yChange(radius = 50) {
         var value = diccio[this.value]
         y = value
         redrawTextY(labels[y])
@@ -682,19 +680,19 @@ d3.csv("data.csv").then(function(data){
             .transition()
                 .duration(1000)
                 .attr("x1", function(d) {
-                    let primera = primera_derivada(d[x], d[y], data, 50,  x, y);
+                    let primera = primera_derivada(d[x], d[y], data, radius,  x, y);
                     return (xScale(d[x]) - normalize(1, primera,10)[0]);
                 })
                 .attr("x2", function(d) {
-                    let primera = primera_derivada(d[x], d[y], data, 50,  x, y);
+                    let primera = primera_derivada(d[x], d[y], data, radius,  x, y);
                     return (xScale(d[x]) + normalize(1, primera,10)[0]);
                 })
                 .attr("y1", function(d) {
-                    let primera = primera_derivada(d[x], d[y], data, 50,  x, y);
+                    let primera = primera_derivada(d[x], d[y], data, radius,  x, y);
                     return (yScale(d[y]) - normalize(1, primera,10)[1]);
                 })
                 .attr("y2", function(d) {
-                    let primera = primera_derivada(d[x], d[y], data, 50,  x, y);
+                    let primera = primera_derivada(d[x], d[y], data, radius,  x, y);
                     return (yScale(d[y]) + normalize(1, primera,10)[1]);
                 })
         hacerstreamlines();
@@ -771,25 +769,25 @@ d3.csv("data.csv").then(function(data){
             i++
         }}
 
-    function dChange() {
+    function dChange(radius = 50) {
         var value = diccio[this.value]
         d3.selectAll(".derivadas")
         .transition()
             .duration(1000)
             .attr("x1", function(d) {
-                    let primera = primera_derivada(d[value], d[y], data, 50,  value, y);
+                    let primera = primera_derivada(d[value], d[y], data, radius,  value, y);
                     return (xScale(d[x]) - normalize(1, primera,10)[0]);
                 })
                 .attr("x2", function(d) {
-                    let primera = primera_derivada(d[value], d[y], data, 50,  value, y);
+                    let primera = primera_derivada(d[value], d[y], data, radius,  value, y);
                     return (xScale(d[x]) + normalize(1, primera,10)[0]);
                 })
                 .attr("y1", function(d) {
-                    let primera = primera_derivada(d[value], d[y], data, 50,  value, y);
+                    let primera = primera_derivada(d[value], d[y], data, radius,  value, y);
                     return (yScale(d[y]) - normalize(1, primera,10)[1]);
                 })
                 .attr("y2", function(d) {
-                    let primera = primera_derivada(d[value], d[y], data, 50,  value, y);
+                    let primera = primera_derivada(d[value], d[y], data, radius,  value, y);
                     return (yScale(d[y]) + normalize(1, primera,10)[1]);
                 })
     }
