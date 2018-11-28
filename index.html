@@ -555,7 +555,8 @@ d3.csv("data.csv").then(function(data){
                         .attr("fill", function(a) {return colors(a[color]);});
                 });
         };
-    };
+    d3.selectAll(".paths").style("opacity", 0)
+    lineas = 0};
 
     hacerstreamlines();
 
@@ -793,7 +794,7 @@ d3.csv("data.csv").then(function(data){
     }
     ;
 })
-var lineas = 1
+var lineas = 0
 function cambiarlineas() {
   if (lineas == 1) {
     d3.selectAll(".paths").style("opacity", 0),
