@@ -11,7 +11,7 @@
     <script src="https://d3js.org/d3.v5.js"></script>
     <script src="https://d3js.org/d3-selection-multi.v1.min.js"></script>
     <script src="derivadas.js"></script>
-    <script src="https://unpkg.com/d3-simple-slider/build/d3-simple-slider.js"></script>
+    <script src="https://unpkg.com/d3-simple-slider"></script>
 
     <title>Scatterplot Streamlines</title>
 
@@ -133,7 +133,7 @@ var margin = {top: 30, bottom: 30, left: 50, right:30},
     yAxis = svg.append("g")
                 .attr("class", "y-axis")
                 .call(yGen),
-  Ylabel = svg.append("text")
+    Ylabel = svg.append("text")
         .attr("class", "label-y")
         .attr("transform", "rotate(-90)")
         .attr("y", 0 - margin.left)
@@ -142,7 +142,7 @@ var margin = {top: 30, bottom: 30, left: 50, right:30},
         .attr("style", "font-size: 20")
         .style("text-anchor", "middle")
         .text("Cholestoral (mg/dl)"),
-  Xlabel = svg.append("text")
+    Xlabel = svg.append("text")
           .attr("class", "label-x")
           .attr("transform",
                 "translate(" + (width/2) + " ," +
@@ -157,9 +157,9 @@ var margin = {top: 30, bottom: 30, left: 50, right:30},
                 .style("left", "50px")
                 .style("top", "50px")
                 .style("opacity", 0),
-  legendw = 600 - margin.left - margin.right + 30
+    legendw = 600 - margin.left - margin.right + 30
     legendh = height*2/3 + 10
-  Lcircle1 = svg.append("circle")
+    Lcircle1 = svg.append("circle")
               .attr("class","clegend0")
               .attr("r", 4)
               .attr("transform",
