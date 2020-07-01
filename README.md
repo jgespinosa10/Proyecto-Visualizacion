@@ -5,4 +5,4 @@ To run:
 python -m http.server
 
 
-- open browser and go into localhost:8000.
+- open browser and go to localhost:8000.
